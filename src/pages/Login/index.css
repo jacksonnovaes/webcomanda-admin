@@ -1,0 +1,21 @@
+.formLogin{
+    margin: 10% auto;
+    width: 40%;
+}
+.input-field{
+    margin: 1% auto;
+}
+
+.input-button{
+    width: 50%;
+    margin: auto;
+}
+
+.input-button button { 
+    margin: 10px;
+}
+
+.formGroup{
+    width: 50%  ;
+    margin: auto;
+}

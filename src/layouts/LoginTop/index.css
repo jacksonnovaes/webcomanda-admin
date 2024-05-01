@@ -1,0 +1,18 @@
+.topLogin {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+}
+
+.topLogin h1 {
+    width: 60%;
+    margin: 10% auto;
+}
+
+.logo{
+    float: left;
+    margin: 10px 32%;
+}   
+.logo img{
+    float: left;
+}
