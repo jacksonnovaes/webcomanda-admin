@@ -6,8 +6,11 @@
 	display: flex;
 	border: 1px solid #ccc;
     flex-direction: row;
+	border-radius: 20px;
 }
 
 .buttonGroup{
-	width: 100%;
+	width: 18%;
+    float: right;
+    padding: 9px 3px;
 }

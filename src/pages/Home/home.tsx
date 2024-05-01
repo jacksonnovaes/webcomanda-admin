@@ -21,7 +21,7 @@ const Home = () => {
     const fetchPedidos = async () => {
       try {
         setLoading(true);
-        const response = await axios.get<IPaginacao<Ipedidos>>('http://localhost:8080/api/v1/order/1/list', {
+        const response = await axios.get<IPaginacao<Ipedidos>>('http://localhost:8080/api/v1/order/list', {
           params: {
             page: currentPage,
             linesPerPage: 24,
@@ -80,7 +80,7 @@ const Home = () => {
           </>
         )}
       </section>
-      <div className="">
+      <div className="buttonGroup">
       <Button onClick={handlePreviousPage} disabled={currentPage === 0} variant="contained">Anterior</Button>
       <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1} variant="contained">Próxima</Button>
       </div>

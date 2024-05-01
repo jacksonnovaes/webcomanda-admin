@@ -44,7 +44,7 @@ const TopMenu = () => {
                 textDecoration: 'none',
               }}
             >
-              <img src="./logo.png"/>
+              <img src="./logo.png" alt="logo do app"/>
             </Typography>
   
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
