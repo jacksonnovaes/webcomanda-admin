@@ -49,10 +49,10 @@ const Home = () => {
     } else {
       navigate("/login");
     }
-    const interval = setInterval(fetchPedidos, 5000); // Rebusca os pedidos a cada 5 segundos
+    //const interval = setInterval(fetchPedidos, 5000); // Rebusca os pedidos a cada 5 segundos
 
     // Limpamos o intervalo quando o componente é desmontado para evitar vazamentos de memória
-    return () => clearInterval(interval);
+  //  return () => clearInterval(interval);
 
   }, [navigate, token, currentPage]);
   const handleNextPage = () => {

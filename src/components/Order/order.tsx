@@ -10,11 +10,16 @@ const Order = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                 <div  className="card" key={item.id}>
                     <h1>Comanda {item.id}</h1>
                     <div>
-                        {item.id}
                         {item.employee}
                         {item.establishment}
+                        <div>
+                        {item.instant}
+                        </div>
                     </div>
                     <Product key={item.id} orderId={item.id} />
+                    <div>
+                        {item.instant}
+                    </div>
                 </div>
             
             ))}
