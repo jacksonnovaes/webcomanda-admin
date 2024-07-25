@@ -1,12 +1,11 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import Ipedidos from "../../interfaces/Ipedidos";
-import { IPaginacao } from "../../interfaces/Ipaginacao";
-import Order from "../../components/Order/order";
-import { useNavigate } from "react-router-dom";
-import TopMenu from "../../layouts/topMenu/TopMenu";
-import './home.css'
 import Button from "@mui/material/Button";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Order from "../../components/Order/order";
+import Ipedidos from "../../interfaces/Ipedidos";
+import TopMenu from "../../layouts/topMenu/TopMenu";
+import { getPedidosService } from "../../services/getPedidosService";
+import './home.css';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,46 +14,38 @@ const Home = () => {
   const [error, setError] = useState<string | null>(null);
   const [pedidos, setPedidos] = useState<Ipedidos[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   useEffect(() => {
     const fetchPedidos = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get<IPaginacao<Ipedidos>>('http://localhost:8080/api/v1/order/list', {
-          params: {
-            page: currentPage,
-            linesPerPage: 24,
-            order: 'id',
-            direction: 'DESC'
-          },
-          headers: {
-            'accept': '*/*',
-            'Authorization': `${token}`
-          }
-        });
-        setPedidos(response.data.content);
-        setTotalPages(response.data.totalPages);
-      } catch (error) {
-        setError('Ocorreu um erro ao buscar os pedidos. Por favor, tente novamente mais tarde.');
+      if (!token) {
         navigate("/login");
+        return;
+      }
+      setLoading(true);
+
+
+      try {
+        const response = await getPedidosService(currentPage, token)
+        console.log(response?.content)
+        setPedidos(response?.content ?? []);
+        setTotalPages(response?.totalPages ?? 0);
+      } catch (erro) {
+        if(erro)
+          navigate("/login");
+          setError("erro ao recuperar pedidos!")
       } finally {
         setLoading(false);
       }
+    };
 
-    }
+    fetchPedidos(); // Initial fetch
+    const interval = setInterval(fetchPedidos, 5000); // Re-fetch orders every 5 seconds
 
-    if (token) {
-      fetchPedidos();
-    } else {
-      navigate("/login");
-    }
-    //const interval = setInterval(fetchPedidos, 5000); // Rebusca os pedidos a cada 5 segundos
-
-    // Limpamos o intervalo quando o componente é desmontado para evitar vazamentos de memória
-  //  return () => clearInterval(interval);
+    return () => clearInterval(interval); // Cleanup interval
 
   }, [navigate, token, currentPage]);
+
   const handleNextPage = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage(currentPage + 1);
@@ -67,7 +58,6 @@ const Home = () => {
     }
   };
 
-
   return (
     <>
       <TopMenu />
@@ -75,14 +65,12 @@ const Home = () => {
         {loading && <div>Carregando...</div>}
         {error && <div>{error}</div>}
         {!loading && !error && (
-          <>
-            <Order pedidos={pedidos} />
-          </>
+          <Order pedidos={pedidos} />
         )}
       </section>
       <div className="buttonGroup">
-      <Button onClick={handlePreviousPage} disabled={currentPage === 0} variant="contained">Anterior</Button>
-      <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1} variant="contained">Próxima</Button>
+        <Button onClick={handlePreviousPage} disabled={currentPage === 0} variant="contained">Anterior</Button>
+        <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1} variant="contained">Próxima</Button>
       </div>
     </>
   )

@@ -1,5 +1,6 @@
 export default interface Iproduto {
-    idProduto:number
+    id:number
     name:string
     menu:number
+    price:number
 } 

@@ -1,11 +1,12 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react'
-import axios from 'axios';
+import * as React from 'react';
+import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import './index.css'
 import LoginTop from '../../layouts/LoginTop/loginTop';
+import { fazerLogin } from '../../services/LoginService';
+import './index.css';
+import { getEstablishment } from '../../services/getEstablihsmente';
 
 const FormLogin = () => {
 
@@ -15,23 +16,22 @@ const FormLogin = () => {
     const navigate = useNavigate()
 
     localStorage.removeItem("token")
-    const onSubmitForm = (evento: React.FormEvent<HTMLFormElement>) => {
+    const onSubmitForm = async (evento: React.FormEvent<HTMLFormElement>) => {
         evento.preventDefault()
-        axios.post("http://localhost:8080/login",
-            {
-                login: login,
-                pass: pass
-            }
-        )
-            .then(response => {
-                console.log(response.data.tokenJwt)
-               
-                localStorage.setItem("token",response.data.tokenJwt)
-                navigate("/home")
-            }).catch(error => {
-                alert("algo deu errado!")
-            })
+        try{
+        const resultado = await fazerLogin(login, pass)
+       
+        if (resultado){
+            localStorage.setItem("token", resultado.tokenJwt)
+            const establishmentResponse = await getEstablishment(resultado.tokenJwt)
+            localStorage.setItem("estab_name",establishmentResponse.name)
+            localStorage.setItem("estab_id",establishmentResponse.id)
+            navigate("/home")
+        }
+            
+        }catch(erro){
 
+        }
     }
     return (
 

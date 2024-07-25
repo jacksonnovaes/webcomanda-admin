@@ -1,21 +1,14 @@
-import { error } from "console"
 import api from "./api"
 
-export default function fazerLogin(login: string, pass: string){
+export async function fazerLogin(login: string, password: string) {
     localStorage.removeItem("token")
-    const onSubmitForm = (evento: React.FormEvent<HTMLFormElement>) => {
-        evento.preventDefault()
-        api.post("/login",
-            {
-                login: login,
-                pass: pass
-            }
-        )
-            .then(response => {
-                return response.data.tokenJwt
-               
-            }).catch(error=>{
-                console.log(error)
-            }
-        )}
+
+    const respoose = await api.post("/login",
+        {
+            login: login,
+            pass: password
+        }
+    )
+    return respoose.data
+       
 }

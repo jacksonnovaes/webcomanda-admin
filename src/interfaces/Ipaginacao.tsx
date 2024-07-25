@@ -1,7 +1,8 @@
 import Ipedidos from "./Ipedidos";
+import Iproduto from "./IProduto";
 
 export interface IPaginacao<T> {
-    content: Ipedidos[];
+    content: T[];
     pageable: {
       pageNumber: number;
       pageSize: number;
@@ -9,3 +10,5 @@ export interface IPaginacao<T> {
     totalPages: number;
     totalElements: number;
 }
+export type IpaginacaoPedidos = IPaginacao<Ipedidos>;
+export type IPaginacaoProduto = IPaginacao<Iproduto>;

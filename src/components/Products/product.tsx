@@ -14,7 +14,7 @@ const Product = ({ orderId }: { orderId: number }) => {
         return (
             <div>
                 {products.map((p) => (
-                    <div key={p.idProduto}>
+                    <div key={p.id}>
                         {p.name}
 
                     </div>

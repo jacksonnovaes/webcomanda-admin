@@ -3,5 +3,6 @@ export default interface Ipedidos {
         employee:string
         establishment:string
         instant:string
+        totalOrder:number
 
 }
