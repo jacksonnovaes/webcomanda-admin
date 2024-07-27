@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
 import Ipedidos from "../../interfaces/Ipedidos";
 import { getItemOrders } from "../../services/getAllItemOrders";
 import './order.css';
 import IItemOrder from "../../interfaces/IItemOrder";
+import { useLocation } from "react-router-dom";
+import CloseOrder from "../CloseOrder/Closerder";
+import { useEffect, useState } from "react";
 
 const Order = ({ pedidos }: { pedidos: Ipedidos[] }) => {
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
-   
+    const location = useLocation()
     useEffect(() => {
         const fetchItemOrders = async (pedidoId: number) => {
             try {
                 const response = await getItemOrders(pedidoId);
                 setItemOrders(response);
-                console.log(response)
+                console.log(response[0].orderId)
             } catch (error) {
                 console.error("Erro ao buscar itens do pedido:", error);
             }
@@ -25,18 +27,33 @@ const Order = ({ pedidos }: { pedidos: Ipedidos[] }) => {
     }, [pedidos]);
 
     return (
-        <div className="row">
+        <div style={{
+            width: "40%",
+            position: "relative",
+            display: "flex",
+            border: "1px solid #ccc",
+            flexDirection: "row",
+            borderRadius: "20px",
+            float: "inline-end",
+            margin: "0% 0%"
+        }}>
             {pedidos && pedidos.length > 0 ? (
                 pedidos.map((item) => (
                     <div className="card" key={item.id}>
-                        <h1>Comanda</h1>
-                        <div>
+
+                        <div style={{ width: "50%", textAlign: "left" }}>
+                            <h1>Comanda</h1>
                             <p>Funcionário: {item.employee}</p>
                             <p>Estabelecimento: {item.establishment}</p>
                             <p>Instante: {item.instant}</p>
                             <p>Total: {item.totalOrder}</p>
                         </div>
-                        <div>
+                        <div style={{
+
+                            width: "50 %",
+                            textAlign: "justify"
+
+                        }}>
                             <h3>Itens:</h3>
                             {itemOrders && itemOrders.length > 0 ? (
                                 itemOrders.map((orderItem) => (
@@ -51,13 +68,14 @@ const Order = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                                 <p>Nenhum item encontrado para este pedido.</p>
                             )}
                         </div>
+                        {/* <CloseOrder pedidos={pedidos}/> */}
                     </div>
-                    ))
-                            ) : (
-                            <p>Nenhum pedido disponível</p>
-                            )
+                ))
+            ) : (
+                <p style={{padding:"18% 30%"}}>Nenhum pedido disponível</p>
+            )
             }
-        </div>
+        </div >
     );
 };
 

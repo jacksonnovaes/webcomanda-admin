@@ -5,17 +5,17 @@ import { Button } from "@mui/material";
 import { openOrder } from "../../services/openOrderService";
 import Order from "../Order/order";
 import IItemOrder from "../../interfaces/IItemOrder";
-import { addItem } from "../../services/addItem";
 import Ipedidos from "../../interfaces/Ipedidos";
+import { useLocation } from "react-router-dom";
+import EditOrder from "../OpenOrder/EditOrder";
 
 const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     const [products, setProducts] = useState<Iproduto[]>([]);
-    const [orderId, setOrderId] = useState();
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
     const [orders, setOrders] = useState<Ipedidos[]>([]);
-    
+    const location = useLocation();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -30,7 +30,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
             }
         };
         fetchProducts();
-    }, [idMenu, currentPage]);
+    }, [idMenu, currentPage]);  // Fetch products when idMenu or currentPage changes
 
     const handleNextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -45,76 +45,101 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     };
 
     const handleAddItemClick = (productId: number) => {
-        const existingItemIndex = itemOrders.findIndex(item => item.productId === productId);
-        let updatedItemOrders = [...itemOrders];
+        setItemOrders(prevItemOrders => {
+            const existingItemIndex = prevItemOrders.findIndex(item => item.productId === productId);
+            const updatedItemOrders = [...prevItemOrders];
 
-        if (existingItemIndex >= 0) {
-            updatedItemOrders[existingItemIndex].quantity += 1;
-        } else {
-            updatedItemOrders.push({
-                productId, 
-                quantity: 1,
-                productName: "",
-                price: 0
-            });
-        }
-      
-        setItemOrders(updatedItemOrders);
-        
+            if (existingItemIndex >= 0) {
+                updatedItemOrders[existingItemIndex].quantity += 1;
+            } else {
+                updatedItemOrders.push({
+                    itemOrderid: 0,
+                    productId,
+                    quantity: 1,
+                    productName: "",
+                    price: 0
+                });
+            }
+
+            return updatedItemOrders;
+        });
     };
 
-    const handleOpenOrderClick = async ()=> {
-        if (itemOrders.length === 0) {
-            console.error("Nenhum item para adicionar ao pedido!");
-            return;
-        }
+    const handleRemoveItemClick = (productId: number) => {
+        setItemOrders(prevItemOrders => {
+            const existingItemIndex = prevItemOrders.findIndex(item => item.productId === productId);
+            const updatedItemOrders = [...prevItemOrders];
 
+            if (existingItemIndex >= 0) {
+                if (updatedItemOrders[existingItemIndex].quantity > 1) {
+                    updatedItemOrders[existingItemIndex].quantity -= 1;
+                } else {
+                    updatedItemOrders.splice(existingItemIndex, 1);
+                }
+            }
+
+            return updatedItemOrders;
+        });
+    };
+
+    const handleOpenOrderClick = async () => {
         try {
             const response = await openOrder(itemOrders);
-            console.log(`ywoueur`,response)
-            setOrders(prevOrders => [...prevOrders, response]);
-            console.log("Pedido criado com sucesso!", orders);
+            setOrders(prevOrders => {
+                const updatedOrders = orders.length > 0 ? [response] : [...prevOrders, response];
+                return updatedOrders;
+            });
+            setItemOrders([]);
+            console.log("Pedido criado/atualizado com sucesso!", response);
         } catch (error) {
-            console.error("Erro ao abrir pedido!", error);
+            console.error("Erro ao abrir/atualizar pedido!", error);
         }
+    };
+
+    const getItemQuantity = (productId: number) => {
+        const item = itemOrders.find(item => item.productId === productId);
+        return item ? item.quantity : 0;
     };
 
     return (
-        <>
-            <div className="">
-                {products && products.length > 0 ? (
+        <div style={{ margin: "3% auto", width: "80%", display: "flex" }}>
+            <div style={{ width: "50%" }}>
+                {products.length > 0 ? (
                     products.map((p) => (
-                        <div key={p.id}>
-                            <Button onClick={() => handleAddItemClick(p.id)}>
-                                {p.name} R$: {p.price}
-                            </Button>
+                        <div style={{ width: "100%" }} key={p.id}>
+                            {p.name} R$: {p.price}
+                            <div style={{ float: "right" }}>
+                                <Button size="small" onClick={() => handleAddItemClick(p.id)}>+</Button>
+                                <span>{getItemQuantity(p.id)}</span>
+                                <Button onClick={() => handleRemoveItemClick(p.id)}>-</Button>
+                            </div>
                         </div>
                     ))
                 ) : (
                     <p>Nenhum produto disponível</p>
                 )}
                 <div>
-                    <button onClick={handlePreviousPage} disabled={currentPage === 0}>
+                    <Button onClick={handlePreviousPage} disabled={currentPage === 0}>
                         Anterior
-                    </button>
-                    <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1}>
+                    </Button>
+                    <Button onClick={handleNextPage} disabled={currentPage >= totalPages - 1}>
                         Próximo
-                    </button>
+                    </Button>
                     <span>Página {currentPage + 1} de {totalPages}</span>
                 </div>
-                <Button 
-                    onClick={handleOpenOrderClick} 
-                    variant="contained" 
-                    color="primary"
-                    disabled={orders.length>=1}
-                >
-                    Abrir Pedido {orders.length}
-                </Button>
-                <Order pedidos={orders} 
-                        />
+                <div style={{ width: "100%", float: "left" }}>
+                    <EditOrder pedidos={orders} />
+                    <Button
+                        onClick={handleOpenOrderClick}
+                        variant="contained"
+                        color="primary"
+                    >
+                        {orders.length > 0 ? 'Atualizar Pedido' : 'Iniciar Pedido'}
+                    </Button>
+                </div>
             </div>
-         
-        </>
+            <Order pedidos={orders} />
+        </div>
     );
 };
 

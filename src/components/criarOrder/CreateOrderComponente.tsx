@@ -21,6 +21,7 @@ const Products = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+    setIdMenu(1)
     const fetchMenu = async () => {
       if (token) {
         const response = await getMenuByEstablishment(token);

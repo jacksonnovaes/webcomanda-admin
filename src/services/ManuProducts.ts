@@ -10,7 +10,7 @@ export async function getProductsByMenu(currentPage: number,id: number) {
        
        
         try {
-        const response = await api.get<IPaginacao<Iproduto>>(`/api/v1/product/menu/${id}/list`,{
+        const response = await api.get<IPaginacao<Iproduto>>(`/api/v1/product/pdv/menu/${id}/list`,{
             params: {
                 page: currentPage,
                 linesPerPage: 24,
