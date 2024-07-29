@@ -1,4 +1,4 @@
-export default interface IItemOrder {
+export default interface IpedidosIItemOrder {
         itemOrderid: number
         productId:number
         quantity:number

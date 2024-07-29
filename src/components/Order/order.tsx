@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import CloseOrder from "../CloseOrder/Closerder";
 import { useEffect, useState } from "react";
 
-const Order = ({ pedidos }: { pedidos: Ipedidos[] }) => {
+const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[],onClearPedidos:()=>void }) => {
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
     const location = useLocation()
     useEffect(() => {
@@ -24,7 +24,14 @@ const Order = ({ pedidos }: { pedidos: Ipedidos[] }) => {
             const pedidoId = pedidos[0].id;
             fetchItemOrders(pedidoId);
         }
+
+        
     }, [pedidos]);
+
+    const clearItemPedidos = () => {
+       
+        setItemOrders([]);
+    };
 
     return (
         <div style={{
@@ -49,6 +56,17 @@ const Order = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                             <p>Total: {item.totalOrder}</p>
                         </div>
                         <div style={{
+                            width: "50%",
+                            float: "right",
+                        }}>
+
+                                <CloseOrder 
+                                pedidos={pedidos} 
+                                onClearItemPedidos={clearItemPedidos}
+                                onClearPedidos = {onClearPedidos}
+                                />
+                            </div>
+                        <div style={{
 
                             width: "50 %",
                             textAlign: "justify"
@@ -67,12 +85,13 @@ const Order = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                             ) : (
                                 <p>Nenhum item encontrado para este pedido.</p>
                             )}
+                            
                         </div>
-                        {/* <CloseOrder pedidos={pedidos}/> */}
+                        
                     </div>
                 ))
             ) : (
-                <p style={{padding:"18% 30%"}}>Nenhum pedido disponível</p>
+                <p style={{ padding: "18% 30%" }}>Nenhum pedido disponível</p>
             )
             }
         </div >

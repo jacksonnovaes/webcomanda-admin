@@ -65,7 +65,9 @@ const Home = () => {
         {loading && <div>Carregando...</div>}
         {error && <div>{error}</div>}
         {!loading && !error && (
-          <Order pedidos={pedidos} />
+          <Order pedidos={pedidos} onClearPedidos={function (): void {
+            throw new Error("Function not implemented.");
+          } } />
         )}
       </section>
       <div className="buttonGroup">

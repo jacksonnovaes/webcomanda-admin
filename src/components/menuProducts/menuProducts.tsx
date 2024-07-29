@@ -44,6 +44,11 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
         }
     };
 
+    const clearPedidos = () => {
+        setOrders([]);
+        setItemOrders([]);
+    };
+
     const handleAddItemClick = (productId: number) => {
         setItemOrders(prevItemOrders => {
             const existingItemIndex = prevItemOrders.findIndex(item => item.productId === productId);
@@ -82,6 +87,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
         });
     };
 
+
     const handleOpenOrderClick = async () => {
         try {
             const response = await openOrder(itemOrders);
@@ -106,9 +112,17 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
             <div style={{ width: "50%" }}>
                 {products.length > 0 ? (
                     products.map((p) => (
-                        <div style={{ width: "100%" }} key={p.id}>
-                            {p.name} R$: {p.price}
-                            <div style={{ float: "right" }}>
+                        <div style={{display:"inline-flex", width:"100%" }} key={p.id}>
+                           <span 
+                           style={{
+                            float: "none",
+                               width: "76%",
+                               margin:"1% 0" 
+                           }}
+                           > {p.name} R$: {p.price}</span>
+                            <div style={{ 
+                               
+                             }}>
                                 <Button size="small" onClick={() => handleAddItemClick(p.id)}>+</Button>
                                 <span>{getItemQuantity(p.id)}</span>
                                 <Button onClick={() => handleRemoveItemClick(p.id)}>-</Button>
@@ -134,11 +148,11 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                         variant="contained"
                         color="primary"
                     >
-                        {orders.length > 0 ? 'Atualizar Pedido' : 'Iniciar Pedido'}
+                        {orders ? 'Atualizar Pedido' : 'Iniciar Pedido'}
                     </Button>
                 </div>
             </div>
-            <Order pedidos={orders} />
+            <Order pedidos={orders} onClearPedidos = {clearPedidos}/>
         </div>
     );
 };

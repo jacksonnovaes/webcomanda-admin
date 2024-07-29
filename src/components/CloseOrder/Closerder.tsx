@@ -11,6 +11,8 @@ import { useEffect, useState } from 'react';
 import Ipedidos from '../../interfaces/Ipedidos';
 import { getItemOrders } from '../../services/getAllItemOrders';
 import IItemOrder from '../../interfaces/IItemOrder';
+import ChoosePayment from '../ChoosePayment/ChoosePayment';
+import { CloseOrderSer } from '../../services/closeOrder';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -21,9 +23,11 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-const CloseOrder = ({ pedido }: { pedido: Ipedidos }) => {
-    const [open, setOpen] = useState(false);
+const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearItemPedidos: () => void, onClearPedidos: () => void}) => {
+    const [open, setOpen] = useState(false)
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
+    const [orders, setOrders] = useState<IItemOrder[]>([]);
+    const [paymentType, setPaymentType] = useState<string>('');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -32,21 +36,33 @@ const CloseOrder = ({ pedido }: { pedido: Ipedidos }) => {
     const handleClose = () => {
         setOpen(false);
     };
+    const handleCloseorder = async () => {
+        try {
+           const response = await CloseOrderSer(pedidos[0].id,paymentType);
+           onClearItemPedidos();
+           onClearPedidos();
+            setOpen(false);
+        } catch (error) {
+            console.error("Erro ao fechar o pedido:", error);
+            // Adicione um tratamento de erro apropriado aqui, se necessário
+        }
+    };
 
     useEffect(() => {
-        const fetchItemOrders = async (pedidoId: number) => {
-            try {
-                const response = await getItemOrders(pedidoId);
-                setItemOrders(response);
-            } catch (error) {
-                console.error("Erro ao buscar itens do pedido:", error);
+
+        const fetchItemOrders = async () => {
+            if (pedidos && pedidos.length > 0) {
+                try {
+                    const response = await getItemOrders(pedidos[0].id);
+                    setItemOrders(response);
+                } catch (error) {
+                    console.error("Erro ao buscar itens do pedido:", error);
+                }
             }
         };
 
-        if (pedido) {
-            fetchItemOrders(pedido.id);
-        }
-    }, [pedido]);
+        fetchItemOrders();
+    }, [pedidos]);
 
     return (
         <>
@@ -57,9 +73,15 @@ const CloseOrder = ({ pedido }: { pedido: Ipedidos }) => {
                 onClose={handleClose}
                 aria-labelledby="customized-dialog-title"
                 open={open}
+                maxWidth='xl'
+
             >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-                    Editar Pedido
+                    <h2 style={{
+                        fontSize: "1.3em",
+                        margin: "0 34%",
+                        color: 'red'
+                    }}> Finalizar Pedido</h2>
                     <IconButton
                         aria-label="close"
                         onClick={handleClose}
@@ -74,18 +96,48 @@ const CloseOrder = ({ pedido }: { pedido: Ipedidos }) => {
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Typography variant="h6">Pedido {pedido.id}</Typography>
-                    {itemOrders.map((orderItem) => (
-                        <div key={orderItem.productId}>
-                            <p>Nome: {orderItem.productName}</p>
-                            <p>Quantidade: {orderItem.quantity}</p>
-                            <p>Total R$: {orderItem.price}</p>
+                    <div style={{
+                        width: "50%",
+                        float: "left"
+                    }}>
+                        {itemOrders.map((orderItem) => (
+                            <div
+
+                                key={orderItem.productId}>
+                                <p>Nome: {orderItem.productName}</p>
+                                <p>Quantidade: {orderItem.quantity}</p>
+                                <p>Total R$: {orderItem.price}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div id="paymentCont" style={{
+                        width: "50%",
+                        float: "right"
+                    }}>
+                        <div style={{
+                            width: "63%",
+                            fontSize: "50px",
+                            fontWeight: '400',
+                            margin: "10% 0"
+
+                        }}>
+                            <span>Total: {pedidos[0].totalOrder}</span>
                         </div>
-                    ))}
+                        <ChoosePayment pedidos={pedidos}onPaymentTypeChange={setPaymentType} />
+                    </div>
                 </DialogContent>
+
                 <DialogActions>
-                    <Button autoFocus onClick={handleClose}>
-                        Salvar alterações
+
+                    <span style={{
+                        color: '#ffff'
+                    }}>
+                        ______________________________________________________________________________________
+                    </span>
+                    <Button 
+                        color='success'
+                        autoFocus onClick={handleCloseorder}>
+                        Finalizar
                     </Button>
                 </DialogActions>
             </BootstrapDialog>
