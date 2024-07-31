@@ -1,29 +1,32 @@
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
-import Ipedidos from '../../interfaces/Ipedidos';
-import { getItemOrders } from '../../services/getAllItemOrders';
+import { forwardRef, useEffect, useState } from 'react';
 import IItemOrder from '../../interfaces/IItemOrder';
+import Ipedidos from '../../interfaces/Ipedidos';
 import { EditItem } from '../../services/editItem';
-import { openOrder } from '../../services/openOrderService';
+import { getItemOrders } from '../../services/getAllItemOrders';
+import { TransitionProps } from '@mui/material/transitions';
+import { Slide } from '@mui/material';
 
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    '& .MuiDialogContent-root': {
-        padding: theme.spacing(2),
+const Transition = forwardRef(function Transition(
+    props: TransitionProps & {
+      children: React.ReactElement<any, any>;
     },
-    '& .MuiDialogActions-root': {
-        padding: theme.spacing(1),
-    },
-}));
+    ref: React.Ref<unknown>,
+  ) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
-const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
+
+const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()=> void }) => {
     const [open, setOpen] = useState(false);
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
 
@@ -58,12 +61,13 @@ const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                     EditItem(itemOrderId, updatedItemOrders[existingItemIndex].quantity)
                         .then(response => {
                             console.log('Item atualizado com sucesso!', response);
+                            onUpdate();
                         })
                         .catch(error => {
                             console.error('Erro ao atualizar item!', error);
-                        });
+                        });    
                 }
-
+                
                 return updatedItemOrders;
             });
         } catch (error) {
@@ -88,6 +92,7 @@ const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                     EditItem(itemOrderId, updatedItemOrders[existingItemIndex].quantity)
                         .then(response => {
                             console.log('Item atualizado com sucesso!', response);
+                            onUpdate();
                         })
                         .catch(error => {
                             console.error('Erro ao atualizar item!', error);
@@ -103,6 +108,7 @@ const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                         .catch(error => {
                             console.error('Erro ao remover item!', error);
                         });
+                    onUpdate();    
                 }
             }
 
@@ -119,18 +125,21 @@ const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
     };
 
     const handleClose = () => {
+        
         setOpen(false);
     };
 
     return (
         <>
-            <Button color='warning' variant="contained" onClick={handleClickOpen}>
-                Editar pedido
+            <Button color='info' variant="text" onClick={handleClickOpen}>
+                <EditIcon/>
             </Button>
-            <BootstrapDialog
-                onClose={handleClose}
-                aria-labelledby="customized-dialog-title"
+            <Dialog
                 open={open}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleClose}
+                aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
                     Editar Pedido
@@ -171,10 +180,10 @@ const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={handleClose}>
-                        Save changes
+                         Sair
                     </Button>
                 </DialogActions>
-            </BootstrapDialog>
+            </Dialog>
         </>
     );
 };

@@ -4,5 +4,6 @@ export default interface Ipedidos {
         establishment:string
         instant:string
         totalOrder:number
+        statusComanda: string
 
 }

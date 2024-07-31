@@ -62,7 +62,8 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                     productId,
                     quantity: 1,
                     productName: "",
-                    price: 0
+                    price: 0,
+                    totalAmount:0
                 });
             }
 
@@ -112,17 +113,17 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
             <div style={{ width: "50%" }}>
                 {products.length > 0 ? (
                     products.map((p) => (
-                        <div style={{display:"inline-flex", width:"100%" }} key={p.id}>
-                           <span 
-                           style={{
-                            float: "none",
-                               width: "76%",
-                               margin:"1% 0" 
-                           }}
-                           > {p.name} R$: {p.price}</span>
-                            <div style={{ 
-                               
-                             }}>
+                        <div style={{ display: "inline-flex", width: "100%" }} key={p.id}>
+                            <span
+                                style={{
+                                    float: "none",
+                                    width: "76%",
+                                    margin: "1% 0"
+                                }}
+                            > {p.name} R$: {p.price}</span>
+                            <div style={{
+
+                            }}>
                                 <Button size="small" onClick={() => handleAddItemClick(p.id)}>+</Button>
                                 <span>{getItemQuantity(p.id)}</span>
                                 <Button onClick={() => handleRemoveItemClick(p.id)}>-</Button>
@@ -142,17 +143,21 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                     <span>Página {currentPage + 1} de {totalPages}</span>
                 </div>
                 <div style={{ width: "100%", float: "left" }}>
-                    <EditOrder pedidos={orders} />
+                 
                     <Button
                         onClick={handleOpenOrderClick}
                         variant="contained"
                         color="primary"
                     >
-                        {orders ? 'Atualizar Pedido' : 'Iniciar Pedido'}
+                        {itemOrders.length > 0
+                            ? 'Adiciona produto'
+                            : orders.length > 0
+                                ? 'Atualizar pedido'
+                                : 'Iniciar Pedido'}
                     </Button>
                 </div>
             </div>
-            <Order pedidos={orders} onClearPedidos = {clearPedidos}/>
+            <Order pedidos={orders} onClearPedidos={clearPedidos} />
         </div>
     );
 };
