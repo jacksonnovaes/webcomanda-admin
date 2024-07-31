@@ -8,20 +8,23 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import IItemOrder from '../../interfaces/IItemOrder';
 import Ipedidos from '../../interfaces/Ipedidos';
 import { EditItem } from '../../services/editItem';
 import { getItemOrders } from '../../services/getAllItemOrders';
+import { TransitionProps } from '@mui/material/transitions';
+import { Slide } from '@mui/material';
 
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    '& .MuiDialogContent-root': {
-        padding: theme.spacing(2),
+const Transition = forwardRef(function Transition(
+    props: TransitionProps & {
+      children: React.ReactElement<any, any>;
     },
-    '& .MuiDialogActions-root': {
-        padding: theme.spacing(1),
-    },
-}));
+    ref: React.Ref<unknown>,
+  ) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
+
 
 const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()=> void }) => {
     const [open, setOpen] = useState(false);
@@ -58,13 +61,13 @@ const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()
                     EditItem(itemOrderId, updatedItemOrders[existingItemIndex].quantity)
                         .then(response => {
                             console.log('Item atualizado com sucesso!', response);
+                            onUpdate();
                         })
                         .catch(error => {
                             console.error('Erro ao atualizar item!', error);
-                        });
-                    onUpdate();    
+                        });    
                 }
-
+                
                 return updatedItemOrders;
             });
         } catch (error) {
@@ -89,6 +92,7 @@ const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()
                     EditItem(itemOrderId, updatedItemOrders[existingItemIndex].quantity)
                         .then(response => {
                             console.log('Item atualizado com sucesso!', response);
+                            onUpdate();
                         })
                         .catch(error => {
                             console.error('Erro ao atualizar item!', error);
@@ -130,10 +134,12 @@ const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()
             <Button color='info' variant="text" onClick={handleClickOpen}>
                 <EditIcon/>
             </Button>
-            <BootstrapDialog
-                onClose={handleClose}
-                aria-labelledby="customized-dialog-title"
+            <Dialog
                 open={open}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleClose}
+                aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
                     Editar Pedido
@@ -174,10 +180,10 @@ const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={handleClose}>
-                        Save changes
+                         Sair
                     </Button>
                 </DialogActions>
-            </BootstrapDialog>
+            </Dialog>
         </>
     );
 };

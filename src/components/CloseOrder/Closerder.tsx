@@ -1,4 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,12 +9,11 @@ import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
-import Ipedidos from '../../interfaces/Ipedidos';
-import { getItemOrders } from '../../services/getAllItemOrders';
 import IItemOrder from '../../interfaces/IItemOrder';
-import ChoosePayment from '../ChoosePayment/ChoosePayment';
+import Ipedidos from '../../interfaces/Ipedidos';
 import { CloseOrderSer } from '../../services/closeOrder';
-import Alert from '@mui/material/Alert';
+import { getItemOrders } from '../../services/getAllItemOrders';
+import ChoosePayment from '../ChoosePayment/ChoosePayment';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -24,10 +24,10 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearItemPedidos: () => void, onClearPedidos: () => void}) => {
+const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearItemPedidos: () => void, onClearPedidos: () => void }) => {
     const [open, setOpen] = useState(false)
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
-    const [orders, setOrders] = useState<IItemOrder[]>([]);
+    const [valueReceived, setValueReceived] = useState<number>(0);
     const [paymentType, setPaymentType] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [severity, setSeverity] = useState<'success' | 'error'>('success'); // Corrigido para tipos aceitos pelo Alert
@@ -44,7 +44,8 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
     };
     const handleCloseorder = async () => {
         try {
-           const response = await CloseOrderSer(pedidos[0].id,paymentType);
+           
+           const response = await CloseOrderSer(pedidos[0].id,paymentType, valueReceived);
            onClearItemPedidos();
            setMessage("Pedido fechado com sucesso!");
            setSeverity('success');
@@ -140,7 +141,10 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
                         }}>
                             <span>Total: {pedidos[0].totalOrder}</span>
                         </div>
-                        <ChoosePayment pedidos={pedidos}onPaymentTypeChange={setPaymentType} />
+                        <ChoosePayment
+                         pedidos={pedidos} 
+                         onPaymentTypeChange={setPaymentType} 
+                         onValueReceived={setValueReceived} />
                     </div>
                 </DialogContent>
 
