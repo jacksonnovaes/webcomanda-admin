@@ -13,6 +13,7 @@ import { getItemOrders } from '../../services/getAllItemOrders';
 import IItemOrder from '../../interfaces/IItemOrder';
 import ChoosePayment from '../ChoosePayment/ChoosePayment';
 import { CloseOrderSer } from '../../services/closeOrder';
+import Alert from '@mui/material/Alert';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -28,22 +29,30 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
     const [orders, setOrders] = useState<IItemOrder[]>([]);
     const [paymentType, setPaymentType] = useState<string>('');
+    const [message, setMessage] = useState<string>('');
+    const [severity, setSeverity] = useState<'success' | 'error'>('success'); // Corrigido para tipos aceitos pelo Alert
+
 
     const handleClickOpen = () => {
+        
         setOpen(true);
     };
 
     const handleClose = () => {
+        onClearPedidos()
         setOpen(false);
     };
     const handleCloseorder = async () => {
         try {
            const response = await CloseOrderSer(pedidos[0].id,paymentType);
            onClearItemPedidos();
-           onClearPedidos();
-            setOpen(false);
+           setMessage("Pedido fechado com sucesso!");
+           setSeverity('success');
+           setTimeout(handleClose, 1000);
+
         } catch (error) {
-            console.error("Erro ao fechar o pedido:", error);
+            setMessage("Erro ao fechar o pedido"+ error);
+            setSeverity('error')
             // Adicione um tratamento de erro apropriado aqui, se necessário
         }
     };
@@ -66,20 +75,23 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
 
     return (
         <>
-            <Button color="warning" variant="contained" onClick={handleClickOpen}>
+            <Button 
+            disabled={itemOrders.length == 0}
+            color="warning" variant="contained" onClick={handleClickOpen}>
                 Fechar Pedido
             </Button>
             <BootstrapDialog
                 onClose={handleClose}
                 aria-labelledby="customized-dialog-title"
                 open={open}
-                maxWidth='xl'
+                maxWidth="sm"
+                fullWidth={true}
 
             >
                 <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
                     <h2 style={{
                         fontSize: "1.3em",
-                        margin: "0 34%",
+                        margin: "0 30%",
                         color: 'red'
                     }}> Finalizar Pedido</h2>
                     <IconButton
@@ -95,6 +107,11 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
+                {message && (
+                    <Typography variant="body2" color="textSecondary" align="center">
+                        <Alert severity={severity}>{message}</Alert>
+                    </Typography>
+                )}
                 <DialogContent dividers>
                     <div style={{
                         width: "50%",
@@ -115,8 +132,8 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
                         float: "right"
                     }}>
                         <div style={{
-                            width: "63%",
-                            fontSize: "50px",
+                           
+                            fontSize: "30px",
                             fontWeight: '400',
                             margin: "10% 0"
 
@@ -132,7 +149,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
                     <span style={{
                         color: '#ffff'
                     }}>
-                        ______________________________________________________________________________________
+                        
                     </span>
                     <Button 
                         color='success'

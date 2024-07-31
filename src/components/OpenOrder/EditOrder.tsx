@@ -1,18 +1,18 @@
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
-import Ipedidos from '../../interfaces/Ipedidos';
-import { getItemOrders } from '../../services/getAllItemOrders';
 import IItemOrder from '../../interfaces/IItemOrder';
+import Ipedidos from '../../interfaces/Ipedidos';
 import { EditItem } from '../../services/editItem';
-import { openOrder } from '../../services/openOrderService';
+import { getItemOrders } from '../../services/getAllItemOrders';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -23,7 +23,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
+const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()=> void }) => {
     const [open, setOpen] = useState(false);
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
 
@@ -62,6 +62,7 @@ const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                         .catch(error => {
                             console.error('Erro ao atualizar item!', error);
                         });
+                    onUpdate();    
                 }
 
                 return updatedItemOrders;
@@ -103,6 +104,7 @@ const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
                         .catch(error => {
                             console.error('Erro ao remover item!', error);
                         });
+                    onUpdate();    
                 }
             }
 
@@ -119,13 +121,14 @@ const EditOrder = ({ pedidos }: { pedidos: Ipedidos[] }) => {
     };
 
     const handleClose = () => {
+        
         setOpen(false);
     };
 
     return (
         <>
-            <Button color='warning' variant="contained" onClick={handleClickOpen}>
-                Editar pedido
+            <Button color='info' variant="text" onClick={handleClickOpen}>
+                <EditIcon/>
             </Button>
             <BootstrapDialog
                 onClose={handleClose}

@@ -2,19 +2,20 @@ import Ipedidos from "../../interfaces/Ipedidos";
 import { getItemOrders } from "../../services/getAllItemOrders";
 import './order.css';
 import IItemOrder from "../../interfaces/IItemOrder";
-import { useLocation } from "react-router-dom";
-import CloseOrder from "../CloseOrder/Closerder";
 import { useEffect, useState } from "react";
+import CloseOrder from "../CloseOrder/Closerder";
+import EditOrder from "../OpenOrder/EditOrder";
 
-const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[],onClearPedidos:()=>void }) => {
+const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedidos: () => void }) => {
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
-    const location = useLocation()
+    const [totalOrder, setTotalOrder] = useState<number>(0);
+
     useEffect(() => {
         const fetchItemOrders = async (pedidoId: number) => {
             try {
                 const response = await getItemOrders(pedidoId);
                 setItemOrders(response);
-                console.log(response[0].orderId)
+                console.log(response[0].orderId);
             } catch (error) {
                 console.error("Erro ao buscar itens do pedido:", error);
             }
@@ -24,13 +25,28 @@ const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[],onClearPedidos
             const pedidoId = pedidos[0].id;
             fetchItemOrders(pedidoId);
         }
-
-        
     }, [pedidos]);
 
+    useEffect(() => {
+        const calculateTotal = () => {
+            const total = itemOrders.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            setTotalOrder(total);
+        };
+
+        calculateTotal();
+    }, [itemOrders]);
+
     const clearItemPedidos = () => {
-       
         setItemOrders([]);
+    };
+
+    const handleUpdate = () => {
+        if (pedidos && pedidos.length > 0) {
+            const pedidoId = pedidos[0].id;
+            getItemOrders(pedidoId)
+                .then(response => setItemOrders(response))
+                .catch(error => console.error("Erro ao buscar itens do pedido:", error));
+        }
     };
 
     return (
@@ -46,55 +62,55 @@ const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[],onClearPedidos
         }}>
             {pedidos && pedidos.length > 0 ? (
                 pedidos.map((item) => (
-                    <div className="card" key={item.id}>
 
+                    <div className="card" key={item.id}>
+                        <div style={{float: "right"}}> 
+                            <EditOrder pedidos={pedidos} onUpdate={handleUpdate} />
+                        </div>
                         <div style={{ width: "50%", textAlign: "left" }}>
+
                             <h1>Comanda</h1>
                             <p>Funcionário: {item.employee}</p>
                             <p>Estabelecimento: {item.establishment}</p>
                             <p>Instante: {item.instant}</p>
-                            <p>Total: {item.totalOrder}</p>
+                            <p>Total: R$ {totalOrder.toFixed(2)}</p>
                         </div>
                         <div style={{
                             width: "50%",
                             float: "right",
                         }}>
-
-                                <CloseOrder 
-                                pedidos={pedidos} 
+                            <CloseOrder
+                                pedidos={pedidos}
                                 onClearItemPedidos={clearItemPedidos}
-                                onClearPedidos = {onClearPedidos}
-                                />
-                            </div>
+                                onClearPedidos={onClearPedidos}
+                            />
+
+                        </div>
                         <div style={{
-
-                            width: "50 %",
+                            width: "50%",
                             textAlign: "justify"
-
                         }}>
+
                             <h3>Itens:</h3>
                             {itemOrders && itemOrders.length > 0 ? (
                                 itemOrders.map((orderItem) => (
                                     <div key={orderItem.productId}>
                                         <p>Nome: {orderItem.productName}</p>
                                         <p>Quantidade: {orderItem.quantity}</p>
-
                                         <p>R$: {orderItem.price}</p>
                                     </div>
                                 ))
                             ) : (
                                 <p>Nenhum item encontrado para este pedido.</p>
                             )}
-                            
+
                         </div>
-                        
                     </div>
                 ))
             ) : (
                 <p style={{ padding: "18% 30%" }}>Nenhum pedido disponível</p>
-            )
-            }
-        </div >
+            )}
+        </div>
     );
 };
 

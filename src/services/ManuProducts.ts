@@ -7,7 +7,7 @@ import Iproduto from "../interfaces/IProduto";
 export async function getProductsByMenu(currentPage: number,id: number) {
    
         const token = localStorage.getItem('token');
-       
+        
        
         try {
         const response = await api.get<IPaginacao<Iproduto>>(`/api/v1/product/pdv/menu/${id}/list`,{
