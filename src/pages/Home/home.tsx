@@ -1,10 +1,12 @@
 import Button from "@mui/material/Button";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthProvider";
 import Order from "../../components/Order/order";
 import Ipedidos from "../../interfaces/Ipedidos";
 import TopMenu from "../../layouts/topMenu/TopMenu";
 import { getPedidosService } from "../../services/getPedidosService";
+import FormLogin from "../Login/login";
 import './home.css';
 
 const Home = () => {
@@ -15,6 +17,7 @@ const Home = () => {
   const [pedidos, setPedidos] = useState<Ipedidos[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -24,16 +27,15 @@ const Home = () => {
       }
       setLoading(true);
 
+      try { 
+        const response = await getPedidosService(currentPage, token);
 
-      try {
-        const response = await getPedidosService(currentPage, token)
-        console.log(response?.content)
         setPedidos(response?.content ?? []);
         setTotalPages(response?.totalPages ?? 0);
-      } catch (erro) {
-        if(erro)
-          navigate("/login");
-          setError("erro ao recuperar pedidos!")
+      }  catch (erro: any) {
+        if (erro.message === '403') {
+          setError("Você não tem permissão para acessar esses pedidos.");
+        }
       } finally {
         setLoading(false);
       }
@@ -43,7 +45,6 @@ const Home = () => {
     const interval = setInterval(fetchPedidos, 5000); // Re-fetch orders every 5 seconds
 
     return () => clearInterval(interval); // Cleanup interval
-
   }, [navigate, token, currentPage]);
 
   const handleNextPage = () => {
@@ -58,23 +59,37 @@ const Home = () => {
     }
   };
 
+  if (!isLoggedIn || error === "Você não tem permissão para acessar esses pedidos." || error === "Você precisa estar logado para acessar os pedidos.") {
+    return <FormLogin />;
+  }
+
   return (
     <>
-      <TopMenu />
-      <section className="container">
-        {loading && <div>Carregando...</div>}
-        {error && <div>{error}</div>}
-        {!loading && !error && (
-          <Order pedidos={pedidos} onClearPedidos={function (): void {
-            throw new Error("Function not implemented.");
-          } } />
-        )}
-      </section>
-      <div className="buttonGroup">
-        <Button onClick={handlePreviousPage} disabled={currentPage === 0} variant="contained">Anterior</Button>
-        <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1} variant="contained">Próxima</Button>
-      </div>
+      {isLoggedIn ? (
+        <>
+          <TopMenu />
+          <section className="container">
+            {loading && <div>Carregando...</div>}
+            {error && <div>{error}</div>}
+            {!loading && !error && (
+              <Order
+                pedidos={pedidos}
+                onClearPedidos={() => {
+                  setPedidos([]);
+                }}
+              />
+            )}
+          </section>
+          <div className="buttonGroup">
+            <Button onClick={handlePreviousPage} disabled={currentPage === 0} variant="contained">Anterior</Button>
+            <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1} variant="contained">Próxima</Button>
+          </div>
+        </>
+      ) : (
+        <FormLogin/>
+      )}
     </>
-  )
-}
+  );
+};
+
 export default Home;

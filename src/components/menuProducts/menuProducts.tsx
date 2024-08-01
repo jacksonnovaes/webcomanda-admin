@@ -6,8 +6,9 @@ import { openOrder } from "../../services/openOrderService";
 import Order from "../Order/order";
 import IItemOrder from "../../interfaces/IItemOrder";
 import Ipedidos from "../../interfaces/Ipedidos";
-import { useLocation } from "react-router-dom";
-import EditOrder from "../OpenOrder/EditOrder";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthProvider";
+import FormLogin from "../../pages/Login/login";
 
 const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     const [products, setProducts] = useState<Iproduto[]>([]);
@@ -15,20 +16,39 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     const [totalPages, setTotalPages] = useState<number>(0);
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
     const [orders, setOrders] = useState<Ipedidos[]>([]);
-    const location = useLocation();
+    const navigate = useNavigate();
+    const token = localStorage.getItem('token');
+    const [error, setError] = useState<string | null>(null);
+    const { isLoggedIn } = useAuth();
 
     useEffect(() => {
+        if (!token) {
+            navigate("/login");
+            return;
+        }
         const fetchProducts = async () => {
-            if (idMenu !== undefined) {
-                try {
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+            try {
+                if (idMenu !== undefined) {
+                    if (!token) {
+                        navigate("/login");
+                        return;
+                    }
                     const response = await getProductsByMenu(currentPage, idMenu);
                     setProducts(response?.content ?? []);
                     setTotalPages(response?.totalPages ?? 0);
-                } catch (error) {
-                    console.error("Erro ao buscar produtos!", error);
+                }
+            } catch (error: any) {
+                if (error.message === '403') {
+                    setError("Você não tem permissão para acessar esses pedidos.");
+                navigate("/login") 
                 }
             }
         };
+
         fetchProducts();
     }, [idMenu, currentPage]);  // Fetch products when idMenu or currentPage changes
 
@@ -63,7 +83,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                     quantity: 1,
                     productName: "",
                     price: 0,
-                    totalAmount:0
+                    totalAmount: 0
                 });
             }
 
@@ -88,8 +108,8 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
         });
     };
 
-
     const handleOpenOrderClick = async () => {
+        
         try {
             const response = await openOrder(itemOrders);
             setOrders(prevOrders => {
@@ -121,9 +141,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                                     margin: "1% 0"
                                 }}
                             > {p.name} R$: {p.price}</span>
-                            <div style={{
-
-                            }}>
+                            <div>
                                 <Button size="small" onClick={() => handleAddItemClick(p.id)}>+</Button>
                                 <span>{getItemQuantity(p.id)}</span>
                                 <Button onClick={() => handleRemoveItemClick(p.id)}>-</Button>
@@ -143,7 +161,6 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                     <span>Página {currentPage + 1} de {totalPages}</span>
                 </div>
                 <div style={{ width: "100%", float: "left" }}>
-                 
                     <Button
                         onClick={handleOpenOrderClick}
                         variant="contained"

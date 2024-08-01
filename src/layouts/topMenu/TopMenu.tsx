@@ -13,10 +13,16 @@ const pages = [
     link: '/home',
   },
   {
-    id: 3,
+    id: 2,
 
     label: 'vendas',
     link: '/vendas',
+  },
+  {
+    id: 3,
+
+    label: 'estoque',
+    link: '/estoque',
   }
 
 ];
@@ -127,7 +133,7 @@ const TopMenu = () => {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {settings.map((setting) => (
+              {pages.map((setting) => (
                 <MenuItem key={setting.id} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center"
                     component={Link} to={setting.link}
@@ -202,7 +208,7 @@ const TopMenu = () => {
             >
 
 
-              {pages.map((setting) => (
+              {settings.map((setting) => (
                 <MenuItem key={setting.id} 
                   onClick={handleCloseUserMenu}>
                   <Typography textAlign="center"
