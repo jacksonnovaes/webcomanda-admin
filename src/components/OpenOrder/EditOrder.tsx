@@ -131,7 +131,7 @@ const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()
 
     return (
         <>
-            <Button color='info' variant="text" onClick={handleClickOpen}>
+            <Button disabled={itemOrders.length==0} color='info' variant="text" onClick={handleClickOpen}>
                 <EditIcon/>
             </Button>
             <Dialog

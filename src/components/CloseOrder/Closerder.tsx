@@ -39,8 +39,9 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
     };
 
     const handleClose = () => {
-        onClearPedidos()
+        
         setOpen(false);
+        onClearPedidos()
     };
     const handleCloseorder = async () => {
         try {
