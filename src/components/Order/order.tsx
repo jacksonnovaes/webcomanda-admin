@@ -16,6 +16,7 @@ const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedido
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
     const { isLoggedIn } = useAuth();
+    const status = "OPENED"
     useEffect(() => {
         if (!token) {
             navigate("/login");
@@ -27,7 +28,7 @@ const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedido
                 return;
             }
             try {
-                const response = await getItemOrders(pedidoId);
+                const response = await getItemOrders(pedidoId, status);
                 setItemOrders(response);
                 console.log(response[0].orderId);
             } catch (error:any) {
@@ -59,7 +60,7 @@ const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedido
     const handleUpdate = () => {
         if (pedidos && pedidos.length > 0) {
             const pedidoId = pedidos[0].id;
-            getItemOrders(pedidoId)
+            getItemOrders(pedidoId, status)
                 .then(response => setItemOrders(response))
                 .catch(error => console.error("Erro ao buscar itens do pedido:", error));
         }

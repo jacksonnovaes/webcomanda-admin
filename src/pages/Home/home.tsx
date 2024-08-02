@@ -8,6 +8,7 @@ import TopMenu from "../../layouts/topMenu/TopMenu";
 import { getPedidosService } from "../../services/getPedidosService";
 import FormLogin from "../Login/login";
 import './home.css';
+import OrderHome from "../../components/OrderHome/orderHome";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState<number>(0);
   const { isLoggedIn } = useAuth();
-
+  const status = "CLOSED"
   useEffect(() => {
     const fetchPedidos = async () => {
       if (!token) {
@@ -28,7 +29,7 @@ const Home = () => {
       setLoading(true);
 
       try { 
-        const response = await getPedidosService(currentPage, token);
+        const response = await getPedidosService(currentPage, token, status);
        
         setPedidos(response.content);
         setTotalPages(response.totalPages ?? 0);
@@ -68,16 +69,16 @@ const Home = () => {
     <>
      
           <TopMenu />
-          <section className="container">
+          <main className="container">
           
-              <Order
+              <OrderHome
                 pedidos={pedidos}
                 onClearPedidos={() => {
                   setPedidos([]);
                 }}
               />
             
-          </section>
+          </main>
           <div className="buttonGroup">
             <Button onClick={handlePreviousPage} disabled={currentPage === 0} variant="contained">Anterior</Button>
             <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1} variant="contained">Próxima</Button>

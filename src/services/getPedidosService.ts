@@ -2,9 +2,9 @@ import { IPaginacao, IPaginacaoProduto } from "../interfaces/Ipaginacao";
 import Ipedidos from "../interfaces/Ipedidos";
 import api from "./api";
 
-export async function getPedidosService(currentPage: number, token: string) {
+export async function getPedidosService(currentPage: number, token: string, status: string) {
     try {
-        const response = await api.get<IPaginacao<Ipedidos>>('/api/v1/pdv/order/list', {
+        const response = await api.get<IPaginacao<Ipedidos>>(`/api/v1/pdv/order/list/${status}`, {
             params: {
                 page: currentPage,
                 linesPerPage: 24,
