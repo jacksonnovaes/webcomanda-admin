@@ -29,9 +29,10 @@ const Home = () => {
 
       try { 
         const response = await getPedidosService(currentPage, token);
-
-        setPedidos(response?.content ?? []);
-        setTotalPages(response?.totalPages ?? 0);
+       
+        setPedidos(response.content);
+        setTotalPages(response.totalPages ?? 0);
+        
       }  catch (erro: any) {
         if (erro.message === '403') {
           setError("Você não tem permissão para acessar esses pedidos.");
@@ -65,30 +66,24 @@ const Home = () => {
 
   return (
     <>
-      {isLoggedIn ? (
-        <>
+     
           <TopMenu />
           <section className="container">
-            {loading && <div>Carregando...</div>}
-            {error && <div>{error}</div>}
-            {!loading && !error && (
+          
               <Order
                 pedidos={pedidos}
                 onClearPedidos={() => {
                   setPedidos([]);
                 }}
               />
-            )}
+            
           </section>
           <div className="buttonGroup">
             <Button onClick={handlePreviousPage} disabled={currentPage === 0} variant="contained">Anterior</Button>
             <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1} variant="contained">Próxima</Button>
           </div>
         </>
-      ) : (
-        <FormLogin/>
-      )}
-    </>
+  
   );
 };
 

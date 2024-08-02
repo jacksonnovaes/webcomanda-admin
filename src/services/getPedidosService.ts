@@ -4,7 +4,7 @@ import api from "./api";
 
 export async function getPedidosService(currentPage: number, token: string) {
     try {
-        const response = await api.get<IPaginacao<Ipedidos>>('/api/v1/order/list', {
+        const response = await api.get<IPaginacao<Ipedidos>>('/api/v1/pdv/order/list', {
             params: {
                 page: currentPage,
                 linesPerPage: 24,
@@ -16,7 +16,7 @@ export async function getPedidosService(currentPage: number, token: string) {
                 'Authorization': `Bearer ${token}` // Certifique-se de adicionar 'Bearer' se necessário
             }
         });
-
+       
         return response.data;
     } catch (error: any) {
         if (error.response) {

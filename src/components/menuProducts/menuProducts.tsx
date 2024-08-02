@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getProductsByMenu } from "../../services/ManuProducts";
 import Iproduto from "../../interfaces/IProduto";
-import { Button } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 import { openOrder } from "../../services/openOrderService";
 import Order from "../Order/order";
 import IItemOrder from "../../interfaces/IItemOrder";
@@ -38,8 +38,10 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                         return;
                     }
                     const response = await getProductsByMenu(currentPage, idMenu);
+        
                     setProducts(response?.content ?? []);
                     setTotalPages(response?.totalPages ?? 0);
+                  
                 }
             } catch (error: any) {
                 if (error.message === '403') {
@@ -69,13 +71,15 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
         setItemOrders([]);
     };
 
-    const handleAddItemClick = (productId: number) => {
+    const handleAddItemClick = (productId: number, estoque: number) => {
         setItemOrders(prevItemOrders => {
             const existingItemIndex = prevItemOrders.findIndex(item => item.productId === productId);
             const updatedItemOrders = [...prevItemOrders];
 
             if (existingItemIndex >= 0) {
-                updatedItemOrders[existingItemIndex].quantity += 1;
+                if (updatedItemOrders[existingItemIndex].quantity < estoque) {
+                    updatedItemOrders[existingItemIndex].quantity += 1;
+                }
             } else {
                 updatedItemOrders.push({
                     itemOrderid: 0,
@@ -134,15 +138,19 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                 {products.length > 0 ? (
                     products.map((p) => (
                         <div style={{ display: "inline-flex", width: "100%" }} key={p.id}>
-                            <span
+                            <Tooltip title={`Estoque: ${p.estoque - getItemQuantity(p.id)}`} placement="top">
+                            <span onClick={() => handleAddItemClick(p.id, p.estoque)}
                                 style={{
                                     float: "none",
                                     width: "76%",
-                                    margin: "1% 0"
+                                    margin: "1% 0",
+                                    color: p.estoque < 10 ? "orange" : "black", 
+                                    cursor: "pointer"
                                 }}
                             > {p.name} R$: {p.price}</span>
+                            </Tooltip>
                             <div>
-                                <Button size="small" onClick={() => handleAddItemClick(p.id)}>+</Button>
+                                <Button disabled={p.estoque <= getItemQuantity(p.id)} size="small" onClick={() => handleAddItemClick(p.id, p.estoque)}>+</Button>
                                 <span>{getItemQuantity(p.id)}</span>
                                 <Button onClick={() => handleRemoveItemClick(p.id)}>-</Button>
                             </div>
