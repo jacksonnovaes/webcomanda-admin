@@ -31,7 +31,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
     const [paymentType, setPaymentType] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [severity, setSeverity] = useState<'success' | 'error'>('success'); // Corrigido para tipos aceitos pelo Alert
-
+    const STATUS = "OPENED"
 
     const handleClickOpen = () => {
         
@@ -64,7 +64,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
         const fetchItemOrders = async () => {
             if (pedidos && pedidos.length > 0) {
                 try {
-                    const response = await getItemOrders(pedidos[0].id);
+                    const response = await getItemOrders(pedidos[0].id, STATUS);
                     setItemOrders(response);
                 } catch (error) {
                     console.error("Erro ao buscar itens do pedido:", error);

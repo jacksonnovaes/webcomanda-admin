@@ -29,11 +29,11 @@ const Transition = forwardRef(function Transition(
 const EditOrder = ({ pedidos, onUpdate     }: { pedidos: Ipedidos[], onUpdate:()=> void }) => {
     const [open, setOpen] = useState(false);
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
-
+   const STATUS = "OPENED"
     useEffect(() => {
         const fetchItemOrders = async (pedidoId: number) => {
             try {
-                const response = await getItemOrders(pedidoId);
+                const response = await getItemOrders(pedidoId,STATUS);
                 setItemOrders(response);
             } catch (error) {
                 console.error("Erro ao buscar itens do pedido:", error);

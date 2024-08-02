@@ -3,4 +3,6 @@ export default interface Iproduto {
     name:string
     menu:number
     price:number
+    estoque: number
+
 } 
