@@ -14,6 +14,7 @@ import Ipedidos from '../../interfaces/Ipedidos';
 import { CloseOrderSer } from '../../services/closeOrder';
 import { getItemOrders } from '../../services/getAllItemOrders';
 import ChoosePayment from '../ChoosePayment/ChoosePayment';
+import { useNavigate } from 'react-router-dom';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -25,6 +26,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearItemPedidos: () => void, onClearPedidos: () => void }) => {
+    const navigate =useNavigate()
     const [open, setOpen] = useState(false)
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
     const [valueReceived, setValueReceived] = useState<number>(0);
@@ -42,6 +44,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
         
         setOpen(false);
         onClearPedidos()
+        navigate("/vendas")
     };
     const handleCloseorder = async () => {
         try {
