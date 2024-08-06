@@ -2,13 +2,12 @@ import Button from "@mui/material/Button";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
-import Order from "../../components/Order/order";
+import OrderHome from "../../components/OrderHome/orderHome";
 import Ipedidos from "../../interfaces/Ipedidos";
 import TopMenu from "../../layouts/topMenu/TopMenu";
 import { getPedidosService } from "../../services/getPedidosService";
 import FormLogin from "../Login/login";
 import './home.css';
-import OrderHome from "../../components/OrderHome/orderHome";
 
 const Home = () => {
   const navigate = useNavigate();

@@ -1,10 +1,16 @@
-import { IPaginacao } from "../interfaces/Ipaginacao";
-import Ipedidos from "../interfaces/Ipedidos";
+import { jwtDecode } from "jwt-decode";
 import api from "./api";
+import { IPaginacao, IPaginacaoProduto } from "../interfaces/Ipaginacao";
+import Iproduto from "../interfaces/IProduto";
 
-export async function getPedidosService(currentPage: number, token: string, status: string) {
+
+export async function getEstoque(currentPage: number, id: number) {
+
+    const token = localStorage.getItem('token');
+
+
     try {
-        const response = await api.get<IPaginacao<Ipedidos>>(`/api/v1/pdv/order/list/${status}`, {
+        const response = await api.get<IPaginacao<Iproduto>>(`/api/v1/product/pdv/estoque/${id}/list`, {
             params: {
                 page: currentPage,
                 linesPerPage: 24,
@@ -13,14 +19,17 @@ export async function getPedidosService(currentPage: number, token: string, stat
             },
             headers: {
                 'accept': '*/*',
-                'Authorization': `Bearer ${token}` // Certifique-se de adicionar 'Bearer' se necessário
+                'Authorization': `${token}`
             }
-        });
-       
+
+        })
         return response.data;
     } catch (error: any) {
+
         if (error.response) {
+
             if (error.response.status === 403) {
+
                 throw new Error('403');
             }
             console.error("Erro na resposta do servidor:", error.response.data);

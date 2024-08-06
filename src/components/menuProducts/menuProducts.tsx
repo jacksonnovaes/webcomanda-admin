@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
-import { getProductsByMenu } from "../../services/ManuProducts";
-import Iproduto from "../../interfaces/IProduto";
 import { Button, Tooltip } from "@mui/material";
-import { openOrder } from "../../services/openOrderService";
-import Order from "../Order/order";
-import IItemOrder from "../../interfaces/IItemOrder";
-import Ipedidos from "../../interfaces/Ipedidos";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
-import FormLogin from "../../pages/Login/login";
+import IItemOrder from "../../interfaces/IItemOrder";
+import Ipedidos from "../../interfaces/Ipedidos";
+import Iproduto from "../../interfaces/IProduto";
+import { getProductsByMenu } from "../../services/MenuProducts";
+import { openOrder } from "../../services/openOrderService";
+import Order from "../Order/order";
 
 const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     const [products, setProducts] = useState<Iproduto[]>([]);
@@ -52,7 +51,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
         };
 
         fetchProducts();
-    }, [idMenu, currentPage]);  // Fetch products when idMenu or currentPage changes
+    }, [idMenu, currentPage]); 
 
     const handleNextPage = () => {
         if (currentPage < totalPages - 1) {

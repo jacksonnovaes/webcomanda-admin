@@ -49,7 +49,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
     const handleCloseorder = async () => {
         try {
            
-           const response = await CloseOrderSer(pedidos[0].id,paymentType, valueReceived);
+            await CloseOrderSer(pedidos[0].id,paymentType, valueReceived);
            onClearItemPedidos();
            setMessage("Pedido fechado com sucesso!");
            setSeverity('success');
@@ -81,7 +81,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
     return (
         <>
             <Button 
-            disabled={itemOrders.length == 0}
+            disabled={itemOrders.length === 0}
             color="warning" variant="contained" onClick={handleClickOpen}>
                 Fechar Pedido
             </Button>
