@@ -1,3 +1,4 @@
+import { Icon, Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
@@ -6,8 +7,8 @@ import Ipedidos from "../../interfaces/Ipedidos";
 import FormLogin from "../../pages/Login/login";
 import { getItemOrders } from "../../services/getAllItemOrders";
 import './orderHome.css';
-import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
-import { Tooltip } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+
 
 const OrderHome = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedidos: () => void }) => {
     const [itemsByPedido, setItemsByPedido] = useState<{ [key: number]: IItemOrder[] }>({});
@@ -68,11 +69,12 @@ const OrderHome = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPe
                 <table style={{ width: '80%', margin: "auto", borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left' }}>
-                            <th>Comanda</th>
+                            <th style={{padding:'10px'}}>Comanda</th>
                             <th>Funcionário</th>
                             <th>Estabelecimento</th>
                             <th>Instante</th>
                             <th>Total</th>
+                            <th>Detalhes</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -84,7 +86,18 @@ const OrderHome = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPe
                                     <td>{pedido.establishment}</td>
                                     <td>{pedido.instant}</td>
                                     <td>{totalsByPedido[pedido.id]?.toFixed(2)}</td>
-                                   
+                                    <td   style={{ padding: '0 22px' }}>
+                                        <Tooltip
+                                            title={itemsByPedido[pedido.id]?.map(item => (
+                                                <div key={item.itemOrderid}>
+                                                    {item.productName}: {item.quantity} x {item.price.toFixed(2)}
+                                                </div>
+                                            ))}
+                                            arrow
+                                        >
+                                            <InfoIcon />
+                                        </Tooltip>
+                                    </td>
                                 </tr>
                             </React.Fragment>
                         ))}
