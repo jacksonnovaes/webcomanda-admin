@@ -10,10 +10,5 @@
 }
 
 .container{
-    width: 69%;
-    margin: -32% 54%;
-    display: flex;
-    border: 1px solid #ccc;
-    flex-direction: row;
-    border-radius: 20px;
+   
 }

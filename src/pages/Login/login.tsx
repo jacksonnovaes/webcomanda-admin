@@ -7,11 +7,14 @@ import LoginTop from '../../layouts/LoginTop/loginTop';
 import { fazerLogin } from '../../services/LoginService';
 import './index.css';
 import { getEstablishment } from '../../services/getEstablihsmente';
+import { Alert, Typography } from '@mui/material';
 
 const FormLogin = () => {
 
     const [login, setLogin] = useState('')
     const [pass, setPass] = useState('')
+    const [message, setMessage] = useState<string>('');
+
 
     const navigate = useNavigate()
 
@@ -30,14 +33,20 @@ const FormLogin = () => {
         }
             
         }catch(erro){
-
+            setMessage("falha ao executar login!")
         }
     }
     return (
 
         <div className='formLogin'>
             <LoginTop/>
+            
             <form onSubmit={onSubmitForm}>
+            {message && (
+                    <Typography variant="body2" color="textSecondary" align="center">
+                        <Alert severity="error">{message}</Alert>
+                    </Typography>
+                )}
                 <div className='formGroup'>
                     <div className='input-field'>
                         <TextField

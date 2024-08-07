@@ -14,6 +14,7 @@ import Ipedidos from '../../interfaces/Ipedidos';
 import { CloseOrderSer } from '../../services/closeOrder';
 import { getItemOrders } from '../../services/getAllItemOrders';
 import ChoosePayment from '../ChoosePayment/ChoosePayment';
+import { useNavigate } from 'react-router-dom';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -25,13 +26,14 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearItemPedidos: () => void, onClearPedidos: () => void }) => {
+    const navigate =useNavigate()
     const [open, setOpen] = useState(false)
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
     const [valueReceived, setValueReceived] = useState<number>(0);
     const [paymentType, setPaymentType] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [severity, setSeverity] = useState<'success' | 'error'>('success'); // Corrigido para tipos aceitos pelo Alert
-
+    const STATUS = "OPENED"
 
     const handleClickOpen = () => {
         
@@ -42,11 +44,12 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
         
         setOpen(false);
         onClearPedidos()
+        navigate("/vendas")
     };
     const handleCloseorder = async () => {
         try {
            
-           const response = await CloseOrderSer(pedidos[0].id,paymentType, valueReceived);
+            await CloseOrderSer(pedidos[0].id,paymentType, valueReceived);
            onClearItemPedidos();
            setMessage("Pedido fechado com sucesso!");
            setSeverity('success');
@@ -64,7 +67,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
         const fetchItemOrders = async () => {
             if (pedidos && pedidos.length > 0) {
                 try {
-                    const response = await getItemOrders(pedidos[0].id);
+                    const response = await getItemOrders(pedidos[0].id, STATUS);
                     setItemOrders(response);
                 } catch (error) {
                     console.error("Erro ao buscar itens do pedido:", error);
@@ -78,7 +81,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
     return (
         <>
             <Button 
-            disabled={itemOrders.length == 0}
+            disabled={itemOrders.length === 0}
             color="warning" variant="contained" onClick={handleClickOpen}>
                 Fechar Pedido
             </Button>
