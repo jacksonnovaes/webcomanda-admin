@@ -4,7 +4,7 @@ import './order.css';
 import IItemOrder from "../../interfaces/IItemOrder";
 import { useEffect, useState } from "react";
 import CloseOrder from "../CloseOrder/Closerder";
-import EditOrder from "../OpenOrder/EditOrder";
+import EditOrder from "../EditOrder/EditOrder";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import FormLogin from "../../pages/Login/login";

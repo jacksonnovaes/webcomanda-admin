@@ -1,15 +1,20 @@
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Button, Input, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import Iproduto from "../../interfaces/IProduto";
 import { getEstoque } from "../../services/EstoqueProducts";
+import { searchProducts } from "../../services/SearchProducts";
+
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import EditProdct from "../EditProduct.tsx/EditProduct";
 
 
 const EstoqueProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     const [products, setProducts] = useState<Iproduto[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState<number>(0);
+    const [searchName, setSearchName] = useState<string>('');
 
 
     const navigate = useNavigate();
@@ -29,14 +34,17 @@ const EstoqueProducts = ({ idMenu }: { idMenu: number | undefined }) => {
             }
             try {
                 if (idMenu !== undefined) {
-                    if (!token) {
-                        navigate("/login");
-                        return;
+                  
+                    let response;
+                    if (searchName) {
+                        response = await searchProducts(currentPage, searchName, idMenu);
+                    } else {
+                        response = await getEstoque(currentPage, idMenu);
                     }
-                    const response = await getEstoque(currentPage, idMenu);
 
                     setProducts(response?.content ?? []);
                     setTotalPages(response?.totalPages ?? 0);
+
 
                 }
             } catch (error: any) {
@@ -48,29 +56,49 @@ const EstoqueProducts = ({ idMenu }: { idMenu: number | undefined }) => {
         };
 
         fetchProducts();
-    }, [idMenu, currentPage]);
+    }, [idMenu, currentPage,searchName]);
 
+
+   
     const handleNextPage = () => {
         if (currentPage < totalPages - 1) {
             setCurrentPage(currentPage + 1);
         }
     };
 
+
     const handlePreviousPage = () => {
         if (currentPage > 0) {
             setCurrentPage(currentPage - 1);
         }
     };
+
+    const handleSearchNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchName(event.target.value);
+        setCurrentPage(0); 
+    };
     return (
-        <>  <TableContainer component={Paper}>
+        <> 
+        <div style={{float: "right"}}>
+         <TextField
+         
+                    name="pesquisar"
+                    label="pesquisar"
+                    value={searchName}
+                    onChange={handleSearchNameChange}
+                    size="small"
+                    variant="outlined"
+                />
+                </div>
+        <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
                         <TableCell align="center">Nome do Produto</TableCell>
                         <TableCell align="center">Preço</TableCell>
-                        <TableCell align="center">Descrição</TableCell>
                         <TableCell align="center">menu</TableCell>
                         <TableCell align="center">Quantidade estoque</TableCell>
+                        <TableCell align="center">Ações</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -81,9 +109,11 @@ const EstoqueProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                                     {product.name}
                                 </TableCell>
                                 <TableCell align="center">{product.price}</TableCell>
-                                <TableCell align="center">{product.name}</TableCell>
                                 <TableCell align="center">{product.menuName}</TableCell>
-                                <TableCell align="center">{product.estoque}</TableCell>
+                                <TableCell align="center">{product.estoque ? product.estoque : "Sem estoque"}</TableCell>
+                                <TableCell align="center">
+                                  <EditProdct product={product}/>
+                                </TableCell>
                             </TableRow>
                         ))
                     ) : (

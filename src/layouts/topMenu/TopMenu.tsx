@@ -20,6 +20,13 @@ const pages = [
     id: 3,
     label: 'Estoque',
     link: '/estoque',
+    sub:[
+      {
+      id: 1,
+        label: 'Cadastrar produtos',
+        link: '/entrada',
+      }
+    ]
   }
 ];
 
