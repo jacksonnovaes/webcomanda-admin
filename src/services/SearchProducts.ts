@@ -4,13 +4,13 @@ import { IPaginacao, IPaginacaoProduto } from "../interfaces/Ipaginacao";
 import Iproduto from "../interfaces/IProduto";
 
 
-export async function getProductsByMenu(currentPage: number, id: number) {
+export async function searchProducts(currentPage: number, name: string, idMenu: number) {
 
     const token = localStorage.getItem('token');
 
-    console.log("fect")
+    
     try {
-        const response = await api.get<IPaginacao<Iproduto>>(`/api/v1/product/pdv/menu/${id}/list`, {
+        const response = await api.get<IPaginacao<Iproduto>>(`/api/v1/product/pdv/menu/${name}/${idMenu}/list`, {
             params: {
                 page: currentPage,
                 linesPerPage: 24,

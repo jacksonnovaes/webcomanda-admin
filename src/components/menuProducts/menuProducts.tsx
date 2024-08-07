@@ -1,4 +1,4 @@
-import { Button, Tooltip } from "@mui/material";
+import { Button, Input, TextField, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
@@ -8,6 +8,7 @@ import Iproduto from "../../interfaces/IProduto";
 import { getProductsByMenu } from "../../services/MenuProducts";
 import { openOrder } from "../../services/openOrderService";
 import Order from "../Order/order";
+import { searchProducts } from "../../services/SearchProducts";
 
 const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     const [products, setProducts] = useState<Iproduto[]>([]);
@@ -15,6 +16,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     const [totalPages, setTotalPages] = useState<number>(0);
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
     const [orders, setOrders] = useState<Ipedidos[]>([]);
+    const [searchName, setSearchName] = useState<string>('');
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     const [error, setError] = useState<string | null>(null);
@@ -25,33 +27,35 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
             navigate("/login");
             return;
         }
+
         const fetchProducts = async () => {
-            if (!token) {
-                navigate("/login");
-                return;
-            }
             try {
                 if (idMenu !== undefined) {
-                    if (!token) {
-                        navigate("/login");
-                        return;
+                    let response;
+                    if (searchName) {
+                        response = await searchProducts(currentPage, searchName, idMenu);
+                    } else {
+                        response = await getProductsByMenu(currentPage, idMenu);
                     }
-                    const response = await getProductsByMenu(currentPage, idMenu);
-        
+
                     setProducts(response?.content ?? []);
                     setTotalPages(response?.totalPages ?? 0);
-                  
                 }
             } catch (error: any) {
                 if (error.message === '403') {
                     setError("Você não tem permissão para acessar esses pedidos.");
-                navigate("/login") 
+                    navigate("/login");
                 }
             }
         };
 
         fetchProducts();
-    }, [idMenu, currentPage]); 
+    }, [idMenu, currentPage, searchName, token, navigate]);
+
+    const handleSearchNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchName(event.target.value);
+        setCurrentPage(0); // Reset to first page
+    };
 
     const handleNextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -112,7 +116,6 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     };
 
     const handleOpenOrderClick = async () => {
-        
         try {
             const response = await openOrder(itemOrders);
             setOrders(prevOrders => {
@@ -134,19 +137,28 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     return (
         <div style={{ margin: "3% auto", width: "80%", display: "flex" }}>
             <div style={{ width: "50%" }}>
+                <TextField
+                size="small"
+                    name="searchName"
+                    value={searchName}
+                    onChange={handleSearchNameChange}
+                />
                 {products.length > 0 ? (
                     products.map((p) => (
                         <div style={{ display: "inline-flex", width: "100%" }} key={p.id}>
                             <Tooltip title={`Estoque: ${p.estoque - getItemQuantity(p.id)}`} placement="top">
-                            <span onClick={() => handleAddItemClick(p.id, p.estoque)}
-                                style={{
-                                    float: "none",
-                                    width: "76%",
-                                    margin: "1% 0",
-                                    color: p.estoque < 10 ? "orange" : "black", 
-                                    cursor: "pointer"
-                                }}
-                            > {p.name} R$: {p.price}</span>
+                                <span
+                                    onClick={() => handleAddItemClick(p.id, p.estoque)}
+                                    style={{
+                                        float: "none",
+                                        width: "76%",
+                                        margin: "1% 0",
+                                        color: p.estoque < 10 ? "orange" : "black",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    {p.name} R$: {p.price}
+                                </span>
                             </Tooltip>
                             <div>
                                 <Button disabled={p.estoque <= getItemQuantity(p.id)} size="small" onClick={() => handleAddItemClick(p.id, p.estoque)}>+</Button>
@@ -174,7 +186,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                         color="primary"
                     >
                         {itemOrders.length > 0
-                            ? 'Adiciona produto'
+                            ? 'Adicionar produto'
                             : orders.length > 0
                                 ? 'Atualizar pedido'
                                 : 'Iniciar Pedido'}

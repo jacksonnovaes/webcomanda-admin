@@ -82,11 +82,11 @@ const OrderHome = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPe
                             <React.Fragment key={pedido.id}>
                                 <tr style={{ borderBottom: '1px solid #ccc' }}>
                                     <td style={{ padding: '10px', backgroundColor: '#f9f9f9' }}>{pedido.id}</td>
-                                    <td>{pedido.employee}</td>
-                                    <td>{pedido.establishment}</td>
-                                    <td>{pedido.instant}</td>
-                                    <td>{totalsByPedido[pedido.id]?.toFixed(2)}</td>
-                                    <td   style={{ padding: '0 22px' }}>
+                                    <td style={{ padding: '10px', backgroundColor: '#f9f9f9' }}>{pedido.employee}</td>
+                                    <td style={{ padding: '10px', backgroundColor: '#f9f9f9' }}>{pedido.establishment}</td>
+                                    <td style={{ padding: '10px', backgroundColor: '#f9f9f9' }}>{pedido.instant}</td>
+                                    <td style={{ padding: '10px', backgroundColor: '#f9f9f9' }}>{totalsByPedido[pedido.id]?.toFixed(2)}</td>
+                                    <td style={{ padding: '0 22px', backgroundColor: '#f9f9f9' }} >
                                         <Tooltip
                                             title={itemsByPedido[pedido.id]?.map(item => (
                                                 <div key={item.itemOrderid}>

@@ -4,5 +4,6 @@ export default interface Iproduto {
     menuName:number
     price:number
     estoque: number
+    idMenu: number
 
 } 
