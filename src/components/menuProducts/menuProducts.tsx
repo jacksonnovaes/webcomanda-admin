@@ -80,7 +80,10 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
             const updatedItemOrders = [...prevItemOrders];
 
             if (existingItemIndex >= 0) {
-                if (updatedItemOrders[existingItemIndex].quantity < estoque) {
+
+                if (estoque === null) {
+                    updatedItemOrders[existingItemIndex].quantity += 1;
+                } else if (updatedItemOrders[existingItemIndex].quantity < estoque) {
                     updatedItemOrders[existingItemIndex].quantity += 1;
                 }
             } else {
@@ -124,8 +127,11 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
             });
             setItemOrders([]);
             console.log("Pedido criado/atualizado com sucesso!", response);
-        } catch (error) {
-            console.error("Erro ao abrir/atualizar pedido!", error);
+        } catch (error: any) {
+            if (error.message === '403') {
+                setError("Você não tem permissão para acessar esses pedidos.");
+                navigate("/login");
+            }
         }
     };
 
@@ -138,7 +144,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
         <div style={{ margin: "3% auto", width: "80%", display: "flex" }}>
             <div style={{ width: "50%" }}>
                 <TextField
-                size="small"
+                    size="small"
                     name="searchName"
                     value={searchName}
                     onChange={handleSearchNameChange}
@@ -146,22 +152,28 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                 {products.length > 0 ? (
                     products.map((p) => (
                         <div style={{ display: "inline-flex", width: "100%" }} key={p.id}>
-                            <Tooltip title={`Estoque: ${p.estoque - getItemQuantity(p.id)}`} placement="top">
+                            <Tooltip
+                                title={p.estoque !== null ? `Estoque: ${p.estoque - getItemQuantity(p.id)}` : "Estoque ilimitado"}
+                                placement="top">
                                 <span
                                     onClick={() => handleAddItemClick(p.id, p.estoque)}
                                     style={{
                                         float: "none",
                                         width: "76%",
                                         margin: "1% 0",
-                                        color: p.estoque < 10 ? "orange" : "black",
+                                        color: p.estoque !== null ?
+                                            (p.estoque < 5 ? "red" : (p.estoque < 10 ? "orange" : "black")) : "black",
                                         cursor: "pointer"
                                     }}
                                 >
+
                                     {p.name} R$: {p.price}
                                 </span>
                             </Tooltip>
                             <div>
-                                <Button disabled={p.estoque <= getItemQuantity(p.id)} size="small" onClick={() => handleAddItemClick(p.id, p.estoque)}>+</Button>
+                                <Button
+                                    disabled={p.estoque !== null && p.estoque !== undefined && getItemQuantity(p.id) >= (p.estoque ?? 0)}
+                                    size="small" onClick={() => handleAddItemClick(p.id, p.estoque)}>+</Button>
                                 <span>{getItemQuantity(p.id)}</span>
                                 <Button onClick={() => handleRemoveItemClick(p.id)}>-</Button>
                             </div>
