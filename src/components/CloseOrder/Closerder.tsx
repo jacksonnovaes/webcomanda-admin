@@ -44,7 +44,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
         
         setOpen(false);
         onClearPedidos()
-        navigate("/vendas")
+        navigate("/home")
     };
     const handleCloseorder = async () => {
         try {

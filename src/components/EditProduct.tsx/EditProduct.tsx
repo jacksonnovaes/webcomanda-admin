@@ -4,6 +4,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { forwardRef, useState } from "react";
 import { TransitionProps } from "@mui/material/transitions";
 import Iproduto from "../../interfaces/IProduto";
+import { updateProduct } from "../../services/updateProduct";
+import { useNavigate } from "react-router-dom";
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -14,9 +16,10 @@ const Transition = forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const EditProdct = ({ product }: { product: Iproduto }) => {
+const EditProdct = ({ product, onSave }: { product: Iproduto; onSave: () => void }) => {
     const [open, setOpen] = useState(false);
     const [editedProduct, setEditedProduct] = useState<Iproduto>({ ...product });
+    const navigate = useNavigate();
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -30,14 +33,16 @@ const EditProdct = ({ product }: { product: Iproduto }) => {
         const { name, value } = e.target;
         setEditedProduct((prevProduct) => ({
             ...prevProduct,
-            [name]: name === "qtd_estoque" || name === "price" ? parseFloat(value) : value,
+            [name]: name === "estoque" || name === "price" ? parseFloat(value) : value,
         }));
     };
 
-    const handleSave = () => {
-        // Aqui você pode adicionar a lógica para salvar as alterações
-        console.log("Produto editado:", editedProduct);
+    const handleSave = async () => {
+      
+        const response = updateProduct(editedProduct, product.id)
+        console.log(response)
         setOpen(false);
+        onSave();
     };
 
     return (
@@ -45,7 +50,7 @@ const EditProdct = ({ product }: { product: Iproduto }) => {
             <Button color="info" variant="text" onClick={handleClickOpen}>
                 <EditIcon />
             </Button>
-            <Dialog
+            <Dialog 
                 open={open}
                 TransitionComponent={Transition}
                 keepMounted
@@ -68,15 +73,7 @@ const EditProdct = ({ product }: { product: Iproduto }) => {
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
-                    <TextField
-                        name="menuName"
-                        value={editedProduct.menuName}
-                        onChange={handleChange}
-                        label="Nome do Menu"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                    />
+                   
                     <TextField
                         name="name"
                         value={editedProduct.name}
