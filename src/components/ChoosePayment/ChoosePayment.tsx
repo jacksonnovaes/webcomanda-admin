@@ -30,7 +30,7 @@ const ChoosePayment = ({ pedidos, onPaymentTypeChange, onValueReceived }: { pedi
                 </Select>
                 <div id="payment" style={{ marginTop: "20%" }}>
                     {paymentType === 'dinheiro' && <PagamentoDinheiro pedidos={pedidos} onValueReceived={onValueReceived} />}
-                    {paymentType === 'pix' && <PagamentoPix />}
+                    {paymentType === 'pix' && <PagamentoPix pedidos={pedidos} />}
                 </div>
             </FormControl>
         </Box>

@@ -49,7 +49,7 @@ const CloseOrder = ({ pedidos, onClearItemPedidos, onClearPedidos }: { pedidos: 
     const handleCloseorder = async () => {
         try {
            
-            await CloseOrderSer(pedidos[0].id,paymentType, valueReceived);
+           await CloseOrderSer(pedidos[0].id,paymentType, valueReceived);
            onClearItemPedidos();
            setMessage("Pedido fechado com sucesso!");
            setSeverity('success');
