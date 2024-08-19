@@ -29,7 +29,7 @@ const Home = () => {
 
       try { 
         const response = await getPedidosService(currentPage, token, status);
-       
+        
         setPedidos(response.content);
         setTotalPages(response.totalPages ?? 0);
         
