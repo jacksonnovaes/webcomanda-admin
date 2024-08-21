@@ -1,8 +1,40 @@
+# Comanda pay admin
+
+Aplicação web pdv para basers restaurantes ou qualquerprodut,pode sergerenciado ascategorias tipo e estoque
+
+## funcionalidades
+
+* Cadastro de produtos
+* Cadastrode categorias (Menu)
+* controle de PDV
+* relatorio de ultimos pedidos
+* receber pedidos do aplicativo de comanda (ComandaApp)
+* relatorio de estque (em implementação)
+  
+Algumas telas ja criadas
+
+![image](https://github.com/user-attachments/assets/5955529d-e1d0-4db6-bb29-b1bb86d771a5)
+
+
+![image](https://github.com/user-attachments/assets/169df7f4-512c-4f4e-8334-1cb2d75df24d)
+
+
+![image](https://github.com/user-attachments/assets/5ce8a330-7e2c-4323-8e86-48258932ef25)
+
+Novas funcionalidades
+
+Integração coom terminal de pagamento
+
+relatorio de venda por funcionario
+
+pagamento com carteia digital do app
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Available Scriptsa
 
 In the project directory, you can run:
 
