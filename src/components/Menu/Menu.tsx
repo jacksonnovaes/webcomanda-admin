@@ -17,6 +17,7 @@ const Menu = ({ setIdMenu }: MenuProps ) => {
   const [menu, setMenu] = useState<Imenu[]>([]);
   const [value, setValue] = useState(0);
   const token = localStorage.getItem('token');
+  const estab_id = localStorage.getItem('estab_id')
   const [error, setError] = useState<string | null>(null);
   const { isLoggedIn } = useAuth();
 
@@ -27,7 +28,7 @@ const Menu = ({ setIdMenu }: MenuProps ) => {
     }
     const fetchMenu = async () => {
       try {
-        const response = await getMenuByEstablishment(token);
+        const response = await getMenuByEstablishment(token, estab_id);
         setMenu(response);
         if (response.length > 0) {
             setIdMenu(response[0].id); // Set initial idMenu

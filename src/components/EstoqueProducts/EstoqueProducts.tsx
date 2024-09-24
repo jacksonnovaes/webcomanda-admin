@@ -7,6 +7,7 @@ import { getEstoque } from "../../services/EstoqueProducts";
 import { searchProducts } from "../../services/SearchProducts";
 
 import EditProdct from "../EditProduct.tsx/EditProduct";
+import NewProdct from "../EditProduct.tsx/NewProduct";
 
 
 const EstoqueProducts = ({ idMenu }: { idMenu: number | undefined }) => {
@@ -79,7 +80,17 @@ const EstoqueProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     };
     return (
         <>
-            <div style={{ float: "right" }}>
+
+            <div style={{ float: "left", margin: "30px" }}>
+
+                <NewProdct />
+            </div>
+            <div style={{
+                float: "right",
+                margin: "30px"
+            }}>
+
+
                 <TextField
 
                     name="pesquisar"

@@ -9,6 +9,7 @@ export async function fazerLogin(login: string, password: string) {
             pass: password
         }
     )
+    console.log(respoose.data)
     return respoose.data
        
 }

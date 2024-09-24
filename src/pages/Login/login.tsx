@@ -7,33 +7,43 @@ import LoginTop from '../../layouts/LoginTop/loginTop';
 import { fazerLogin } from '../../services/LoginService';
 import './index.css';
 import { getEstablishment } from '../../services/getEstablihsmente';
-import { Alert, Typography } from '@mui/material';
+import { Alert, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import { GetCongigApp } from '../../services/getConfigApp';
+import { config } from 'process';
+import { useAuth } from '../../AuthProvider';
 
 const FormLogin = () => {
 
     const [login, setLogin] = useState('')
     const [pass, setPass] = useState('')
-    const [message, setMessage] = useState<string>('');
+    const [message, setMessage] = useState<string>('')
 
-
+    const { login: authLogin } = useAuth();
     const navigate = useNavigate()
 
-    localStorage.removeItem("token")
+  
     const onSubmitForm = async (evento: React.FormEvent<HTMLFormElement>) => {
         evento.preventDefault()
         try{
         const resultado = await fazerLogin(login, pass)
        
         if (resultado){
-            localStorage.setItem("token", resultado.tokenJwt)
+            authLogin(resultado.tokenJwt);
             const establishmentResponse = await getEstablishment(resultado.tokenJwt)
             localStorage.setItem("estab_name",establishmentResponse.name)
             localStorage.setItem("estab_id",establishmentResponse.id)
-            navigate("/home")
-        }
+            const configResult =  await GetCongigApp(establishmentResponse.id)
+            if(configResult.firstLogin){
+                navigate("/config")
+            }else{
+                navigate("/home")
+            }
             
-        }catch(erro){
-            setMessage("falha ao executar login!")
+       }
+           
+        }catch(erro: any){
+            
+            setMessage("falha ao executar login!"+ erro)
         }
     }
     return (
@@ -49,6 +59,7 @@ const FormLogin = () => {
                 )}
                 <div className='formGroup'>
                     <div className='input-field'>
+                       
                         <TextField
                             fullWidth
                             id="outlined-basic"

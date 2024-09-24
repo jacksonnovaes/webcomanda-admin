@@ -31,17 +31,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     useEffect(() => {
         // Verifique se o usuário está logado (por exemplo, verificando um token no localStorage)
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token');
         setIsLoggedIn(!!token);
     }, []);
 
     const login = (token: string) => {
-        localStorage.setItem('authToken', token);
+        localStorage.setItem('token', token);
         setIsLoggedIn(true);
     };
 
     const logout = () => {
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('token');
         setIsLoggedIn(false);
     };
 

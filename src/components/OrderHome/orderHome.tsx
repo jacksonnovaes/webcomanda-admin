@@ -1,4 +1,5 @@
-import { Icon, Tooltip } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import { Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
@@ -7,7 +8,6 @@ import Ipedidos from "../../interfaces/Ipedidos";
 import FormLogin from "../../pages/Login/login";
 import { getItemOrders } from "../../services/getAllItemOrders";
 import './orderHome.css';
-import InfoIcon from '@mui/icons-material/Info';
 
 
 const OrderHome = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedidos: () => void }) => {
@@ -31,10 +31,11 @@ const OrderHome = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPe
             }
             try {
                 const response = await getItemOrders(pedidoId, status);
+               
                 setItemsByPedido(prevState => ({ ...prevState, [pedidoId]: response }));
                 const total = response.reduce((sum: number, item: { quantity: number; price: number; }) => sum + (item.quantity * item.price), 0);
                 setTotalsByPedido(prevState => ({ ...prevState, [pedidoId]: total }));
-
+                handleUpdate(pedidoId)
             } catch (error: any) {
                 if (error.message === '403') {
                     setError("Você não tem permissão para acessar esses pedidos.");
@@ -45,13 +46,17 @@ const OrderHome = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPe
         if (pedidos && pedidos.length > 0) {
             pedidos.forEach(pedido => {
                 fetchItemOrders(pedido.id);
+            
             });
         }
     }, [pedidos, token, navigate]);
 
     const handleUpdate = (pedidoId: number) => {
+ 
         getItemOrders(pedidoId, status)
+        
             .then(response => {
+                console.log(response)
                 setItemsByPedido(prevState => ({ ...prevState, [pedidoId]: response }));
                 const total = response.reduce((sum: number, item: { quantity: number; price: number; }) => sum + (item.quantity * item.price), 0);
                 setTotalsByPedido(prevState => ({ ...prevState, [pedidoId]: total }));
@@ -69,7 +74,7 @@ const OrderHome = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPe
                 <table style={{ width: '80%', margin: "auto", borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ textAlign: 'left' }}>
-                            <th style={{padding:'10px'}}>Comanda</th>
+                            <th style={{ padding: '10px' }}>Comanda</th>
                             <th>Funcionário</th>
                             <th>Estabelecimento</th>
                             <th>Instante</th>

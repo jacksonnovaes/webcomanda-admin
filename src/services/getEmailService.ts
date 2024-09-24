@@ -1,6 +1,4 @@
 import { jwtDecode } from "jwt-decode";
-import { IPaginacao } from "../interfaces/Ipaginacao";
-import Ipedidos from "../interfaces/Ipedidos";
 import api from "./api";
 
 

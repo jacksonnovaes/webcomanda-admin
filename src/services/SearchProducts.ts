@@ -1,7 +1,6 @@
-import { jwtDecode } from "jwt-decode";
-import api from "./api";
-import { IPaginacao, IPaginacaoProduto } from "../interfaces/Ipaginacao";
+import { IPaginacao } from "../interfaces/Ipaginacao";
 import Iproduto from "../interfaces/IProduto";
+import api from "./api";
 
 
 export async function searchProducts(currentPage: number, name: string, idMenu: number) {

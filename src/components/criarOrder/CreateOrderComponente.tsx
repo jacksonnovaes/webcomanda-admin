@@ -13,17 +13,12 @@ const CreateOrder = () => {
   const { isLoggedIn } = useAuth();
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+   
     // Set a default menu ID, or fetch it dynamically
     setIdMenu(1);
-  }, [token, navigate]);
+  }, [isLoggedIn, navigate]);
 
-  if (!isLoggedIn) {
-    return <FormLogin />;
-  }
+
 
   return (
     <>

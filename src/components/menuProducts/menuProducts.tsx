@@ -1,4 +1,4 @@
-import { Button, Input, TextField, Tooltip } from "@mui/material";
+import { Box, Button, Input, TextField, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
@@ -23,10 +23,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     const { isLoggedIn } = useAuth();
 
     useEffect(() => {
-        if (!token) {
-            navigate("/login");
-            return;
-        }
+    
 
         const fetchProducts = async () => {
             try {
@@ -141,10 +138,13 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
     };
 
     return (
-        <div style={{ margin: "3% auto", width: "80%", display: "flex" }}>
-            <div style={{ width: "50%" }}>
+        <Box component="section"
+         sx={{ width: "100" , margin: 5, p: 5, border: '1px solid grey', borderRadius: 5, 
+            display:"flex",
+         }}>
+            <Box style={{ width: "60%" }}>
                 <TextField
-                    size="small"
+                    size="medium"
                     name="searchName"
                     value={searchName}
                     onChange={handleSearchNameChange}
@@ -195,7 +195,7 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                     <Button
                         onClick={handleOpenOrderClick}
                         variant="contained"
-                        color="primary"
+                        color="secondary"
                     >
                         {itemOrders.length > 0
                             ? 'Adicionar produto'
@@ -204,9 +204,9 @@ const MenuProducts = ({ idMenu }: { idMenu: number | undefined }) => {
                                 : 'Iniciar Pedido'}
                     </Button>
                 </div>
-            </div>
+            </Box>
             <Order pedidos={orders} onClearPedidos={clearPedidos} />
-        </div>
+        </Box>
     );
 };
 

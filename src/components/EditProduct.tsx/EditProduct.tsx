@@ -1,18 +1,18 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Slide, TextField } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import { forwardRef, useState } from "react";
+import EditIcon from '@mui/icons-material/Edit';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Slide, TextField } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
+import { forwardRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Iproduto from "../../interfaces/IProduto";
 import { updateProduct } from "../../services/updateProduct";
-import { useNavigate } from "react-router-dom";
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
-      children: React.ReactElement<any, any>;
+        children: React.ReactElement<any, any>;
     },
     ref: React.Ref<unknown>,
-  ) {
+) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
@@ -38,7 +38,7 @@ const EditProdct = ({ product, onSave }: { product: Iproduto; onSave: () => void
     };
 
     const handleSave = async () => {
-      
+
         const response = updateProduct(editedProduct, product.id)
         console.log(response)
         setOpen(false);
@@ -50,7 +50,7 @@ const EditProdct = ({ product, onSave }: { product: Iproduto; onSave: () => void
             <Button color="info" variant="text" onClick={handleClickOpen}>
                 <EditIcon />
             </Button>
-            <Dialog 
+            <Dialog
                 open={open}
                 TransitionComponent={Transition}
                 keepMounted
@@ -73,7 +73,9 @@ const EditProdct = ({ product, onSave }: { product: Iproduto; onSave: () => void
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
-                   
+
+           
+
                     <TextField
                         name="name"
                         value={editedProduct.name}

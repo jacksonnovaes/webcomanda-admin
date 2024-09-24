@@ -1,4 +1,3 @@
-import Ipedidos from "../interfaces/Ipedidos";
 import IPagamentoPix from "../interfaces/RequstCobranca";
 import api from "./api";
 

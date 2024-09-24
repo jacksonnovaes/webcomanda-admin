@@ -8,6 +8,7 @@ import EditOrder from "../EditOrder/EditOrder";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import FormLogin from "../../pages/Login/login";
+import { Box } from "@mui/material";
 
 const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedidos: () => void }) => {
     const [itemOrders, setItemOrders] = useState<IItemOrder[]>([]);
@@ -71,7 +72,7 @@ const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedido
     }
 
     return (
-        <div style={{
+        <Box style={{
             width: "40%",
             position: "relative",
             display: "flex",
@@ -131,7 +132,7 @@ const Order = ({ pedidos, onClearPedidos }: { pedidos: Ipedidos[], onClearPedido
             ) : (
                 <p style={{ padding: "18% 30%" }}>Nenhum pedido disponível</p>
             )}
-        </div>
+        </Box>
     );
 };
 

@@ -1,10 +1,12 @@
 import Button from "@mui/material/Button";
+import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthProvider";
 import OrderHome from "../../components/OrderHome/orderHome";
 import Ipedidos from "../../interfaces/Ipedidos";
 import TopMenu from "../../layouts/topMenu/TopMenu";
+import { GetCongigApp } from "../../services/getConfigApp";
 import { getPedidosService } from "../../services/getPedidosService";
 import FormLogin from "../Login/login";
 import './home.css';
@@ -18,8 +20,11 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState<number>(0);
   const { isLoggedIn } = useAuth();
+  const [config, setConfig] = useState<any>({})
   const status = "CLOSED"
   useEffect(() => {
+
+    
     const fetchPedidos = async () => {
       if (!token) {
         navigate("/login");
@@ -29,10 +34,15 @@ const Home = () => {
 
       try { 
         const response = await getPedidosService(currentPage, token, status);
+        const decoded:any =  jwtDecode(token)
+        const id = decoded.jti
         
         setPedidos(response.content);
         setTotalPages(response.totalPages ?? 0);
         
+
+        const configResult = await GetCongigApp(id)
+        setConfig(configResult)
       }  catch (erro: any) {
         if (erro.message === '403') {
           setError("Você não tem permissão para acessar esses pedidos.");
@@ -60,13 +70,14 @@ const Home = () => {
     }
   };
 
+
   if (!isLoggedIn || error === "Você não tem permissão para acessar esses pedidos." || error === "Você precisa estar logado para acessar os pedidos.") {
     return <FormLogin />;
   }
 
   return (
     <>
-     
+  
           <TopMenu />
           <main className="container">
           
@@ -82,6 +93,7 @@ const Home = () => {
             <Button onClick={handlePreviousPage} disabled={currentPage === 0} variant="contained">Anterior</Button>
             <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1} variant="contained">Próxima</Button>
           </div>
+
         </>
   
   );
